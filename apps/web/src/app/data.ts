@@ -44,6 +44,15 @@ export const useArtwork = (id: string) =>
 export const useBooks = () => useLocal('books', [], (s) => s.books.list().then(byNewest)).data;
 export const useBook = (id: string) =>
   useLocal('books', [id], (s) => s.books.get(id).then((b) => b ?? null));
+export const useRecords = () =>
+  useLocal('records', [], (s) => s.records.list().then(byNewest)).data;
+export const useRecord = (id: string) =>
+  useLocal('records', [id], (s) => s.records.get(id).then((r) => r ?? null));
+/** The listening log, latest first. */
+export const useSpins = () =>
+  useLocal('spins', [], (s) =>
+    s.spins.list().then((list) => list.sort((a, b) => b.playedAt.localeCompare(a.playedAt))),
+  ).data;
 export type CollectiblesByKind = { [K in CollectibleKind]: CollectibleOf<K>[] };
 
 function combineCollectibles(results: UseQueryResult<unknown[]>[]): CollectiblesByKind | undefined {
@@ -153,11 +162,15 @@ export function useInsights() {
   const visits = useVisits();
   const artworks = useArtworks();
   const books = useBooks();
+  const records = useRecords();
+  const spins = useSpins();
   const creators = useCreators();
   return useMemo(() => {
-    if (!places || !venues || !visits || !artworks || !books || !creators) return undefined;
-    return computeInsights({ places, venues, visits, artworks, books, creators });
-  }, [places, venues, visits, artworks, books, creators]);
+    if (!places || !venues || !visits || !artworks || !books || !records || !spins || !creators) {
+      return undefined;
+    }
+    return computeInsights({ places, venues, visits, artworks, books, records, spins, creators });
+  }, [places, venues, visits, artworks, books, records, spins, creators]);
 }
 
 /** Context passed to external API providers: UI language and optional API keys. */

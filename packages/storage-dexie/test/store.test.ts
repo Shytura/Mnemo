@@ -6,7 +6,10 @@ import {
   ensureVisit,
   entityNames,
   findBookByIsbn,
+  findRecord,
   lendBook,
+  lendRecord,
+  logSpin,
   mergeDuplicateCreators,
   migrations,
   removeArtwork,
@@ -14,11 +17,15 @@ import {
   removeCreator,
   removePlace,
   removeQuote,
+  removeRecord,
+  removeTrip,
+  removeVenue,
   returnBook,
   SCHEMA_VERSION,
   saveArtwork,
   saveBook,
   saveQuote,
+  saveRecord,
   setReadingStatus,
   toggleInCollection,
 } from '@mnemo/core';
@@ -291,6 +298,90 @@ describe('library', () => {
   });
 });
 
+describe('records', () => {
+  it('links artists and credited people and finds records by barcode in either form', async () => {
+    const record = await saveRecord(store, {
+      title: 'Unknown Pleasures',
+      artists: ['Joy Division', ''],
+      credits: [
+        { name: 'Peter Saville', role: 'design' },
+        { name: 'Martin Hannett', role: 'producer' },
+      ],
+      barcode: '0 36000-29145 2',
+      musicbrainzId: 'mb-1',
+    });
+    expect(record.artists).toEqual(['Joy Division']);
+    expect(record.barcode).toBe('036000291452');
+    expect(record.creatorIds).toHaveLength(3);
+    const [, saville] = record.creatorIds;
+
+    // Dropping the producer keeps the designer's link, even after a rename.
+    await store.creators.update(saville!, { name: 'Peter Saville (designer)' });
+    const edited = await saveRecord(
+      store,
+      { title: 'Unknown Pleasures', credits: [{ name: 'Peter Saville', role: 'design' }] },
+      record.id,
+    );
+    expect(edited.creatorIds).toEqual([record.creatorIds[0], saville]);
+    expect(edited.title).toBe('Unknown Pleasures');
+
+    expect((await findRecord(store, { barcode: '0036000291452' }))?.id).toBe(record.id);
+    expect((await findRecord(store, { musicbrainzId: 'mb-1' }))?.id).toBe(record.id);
+    expect(await findRecord(store, { discogsId: '1' })).toBeUndefined();
+  });
+
+  it('logs spins and lends only owned records', async () => {
+    const record = await saveRecord(store, { title: 'Blue Train', artists: ['John Coltrane'] });
+    const spin = await logSpin(store, record.id, { sides: ['A'], note: '  ' });
+    expect(spin).toMatchObject({ recordId: record.id, sides: ['A'], note: undefined });
+    await expect(logSpin(store, 'missing')).rejects.toThrow();
+
+    expect(
+      (await lendRecord(store, record.id, { name: 'Mia', since: '2025-04-01' })).loan,
+    ).toBeTruthy();
+    // Moving a record off the shelf ends its loan.
+    expect(
+      (await saveRecord(store, { title: 'Blue Train', ownership: 'sold' }, record.id)).loan,
+    ).toBeUndefined();
+    await expect(
+      lendRecord(store, record.id, { name: 'Mia', since: '2025-04-01' }),
+    ).rejects.toThrow();
+  });
+
+  it('removes records with their spins, covers and list entries', async () => {
+    const cover = await store.media.create({ remoteUrl: 'https://example.org/c.jpg' });
+    const record = await saveRecord(store, { title: 'Kind of Blue', mediaIds: [cover.id] });
+    const other = await saveRecord(store, { title: 'Blue Train' });
+    await logSpin(store, record.id);
+    await logSpin(store, other.id);
+    const list = await store.collections.create({ name: 'Jazz' });
+    await toggleInCollection(store, list.id, { kind: 'record', id: record.id });
+    await removeRecord(store, record.id);
+    expect(await store.records.get(record.id)).toBeUndefined();
+    expect(await store.media.get(cover.id)).toBeUndefined();
+    expect((await store.spins.list()).map((s) => s.recordId)).toEqual([other.id]);
+    expect((await store.collections.get(list.id))?.items).toEqual([]);
+  });
+
+  it('forgets the shop and trip of a purchase when they are deleted', async () => {
+    const { place } = await seedVienna();
+    const shop = await store.venues.create({
+      placeId: place.id,
+      name: 'Substance',
+      kind: 'recordShop',
+    });
+    const trip = await store.trips.create({ title: 'Wien' });
+    const record = await saveRecord(store, {
+      title: 'Blue Train',
+      acquisition: { venueId: shop.id, tripId: trip.id, price: 25, gift: false },
+    });
+    await removeVenue(store, shop.id);
+    await removeTrip(store, trip.id);
+    expect((await store.records.get(record.id))?.acquisition).toEqual({ price: 25, gift: false });
+    expect(await store.trips.get(trip.id)).toBeUndefined();
+  });
+});
+
 describe('snapshot & restore', () => {
   it('replaces data and keeps blobs', async () => {
     const { venue } = await seedVienna();
@@ -391,6 +482,30 @@ describe('schema upgrades', () => {
     });
     const book = await saveBook(upgraded, { title: 'Briefe', authors: ['Klimt'] });
     expect(book.creatorIds).toEqual(['c1']);
+    await upgraded.db.delete();
+  });
+
+  it('adds records and spins to a database created by version 0.4', async () => {
+    const name = `legacy-${createId()}`;
+    const legacy = new Dexie(name);
+    for (const version of [1, 2, 3, 4]) legacy.version(version).stores(STORES[version]!);
+    const row = { createdAt: '2026-01-01T00:00:00Z', updatedAt: '2026-01-01T00:00:00Z' };
+    await legacy.table('creators').add({ ...row, id: 'c1', schemaVersion: 4, name: 'Nina Simone' });
+    await legacy.table('books').add({
+      ...row,
+      id: 'b1',
+      schemaVersion: 4,
+      title: 'I Put a Spell on You',
+      creatorIds: ['c1'],
+    });
+    legacy.close();
+
+    const upgraded = createDexieStore(name);
+    expect(await upgraded.books.get('b1')).toMatchObject({ schemaVersion: SCHEMA_VERSION });
+    const record = await saveRecord(upgraded, { title: 'Pastel Blues', artists: ['Nina Simone'] });
+    expect(record.creatorIds).toEqual(['c1']);
+    await logSpin(upgraded, record.id);
+    expect(await upgraded.spins.list()).toHaveLength(1);
     await upgraded.db.delete();
   });
 });

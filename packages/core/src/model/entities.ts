@@ -16,7 +16,7 @@ import {
  * Every entity type that can be collected into lists. Adding a type means adding it here and
  * mapping it to its table in `registry.ts`.
  */
-export const collectibleKinds = ['artwork', 'book'] as const;
+export const collectibleKinds = ['artwork', 'book', 'record'] as const;
 export const collectibleKindSchema = z.enum(collectibleKinds);
 export type CollectibleKind = z.infer<typeof collectibleKindSchema>;
 
@@ -52,6 +52,7 @@ export const venueKinds = [
   'church',
   'castle',
   'park',
+  'recordShop',
   'other',
 ] as const;
 export const venueKindSchema = z.enum(venueKinds);
@@ -208,6 +209,152 @@ export const bookDraftSchema = z.object({
 export const bookSchema = bookDraftSchema.extend(entityMetaShape);
 export type BookDraft = z.input<typeof bookDraftSchema>;
 export type Book = z.infer<typeof bookSchema>;
+
+// ── Record: a release in the record collection ────────────────────────────
+
+/** Whether the record is on the user's shelf. Sold records stay as part of its history. */
+export const recordOwnerships = ['owned', 'wishlist', 'sold'] as const;
+export const recordOwnershipSchema = z.enum(recordOwnerships);
+export type RecordOwnership = z.infer<typeof recordOwnershipSchema>;
+
+/** The kind of release; vinyl first, other carriers so a collection can grow beyond it. */
+export const recordFormats = ['lp', 'ep', 'single', 'box', 'shellac', 'cd', 'cassette'] as const;
+export const recordFormatSchema = z.enum(recordFormats);
+export type RecordFormat = z.infer<typeof recordFormatSchema>;
+
+/** Disc diameter in inches. */
+export const recordSizes = ['12', '10', '7'] as const;
+export const recordSizeSchema = z.enum(recordSizes);
+export type RecordSize = z.infer<typeof recordSizeSchema>;
+
+/** Playing speed in rpm (33⅓ is stored as `33`). */
+export const recordSpeeds = ['33', '45', '78'] as const;
+export const recordSpeedSchema = z.enum(recordSpeeds);
+export type RecordSpeed = z.infer<typeof recordSpeedSchema>;
+
+/** The Goldmine grading scale, best first; record and sleeve are graded separately. */
+export const recordGrades = ['M', 'NM', 'VG+', 'VG', 'G+', 'G', 'F', 'P'] as const;
+export const recordGradeSchema = z.enum(recordGrades);
+export type RecordGrade = z.infer<typeof recordGradeSchema>;
+
+/** What a credited person did besides being the main artist. */
+export const creditRoles = [
+  'musician',
+  'producer',
+  'engineer',
+  'design',
+  'artwork',
+  'photography',
+  'linerNotes',
+  'other',
+] as const;
+export const creditRoleSchema = z.enum(creditRoles);
+export type CreditRole = z.infer<typeof creditRoleSchema>;
+
+export const creditSchema = z.object({
+  name: z.string().trim().min(1),
+  role: creditRoleSchema,
+  /** E.g. the instrument of a musician or `art direction` for a designer. */
+  detail: z.string().optional(),
+});
+export type Credit = z.infer<typeof creditSchema>;
+
+export const trackSchema = z.object({
+  /** As printed on the label, e.g. `A1`, `B3` or `1`. */
+  position: z.string().default(''),
+  title: z.string().trim().min(1),
+  /** In seconds. */
+  duration: z.number().int().positive().optional(),
+});
+export type Track = z.infer<typeof trackSchema>;
+
+/** How the record came into the collection. */
+export const acquisitionSchema = z.object({
+  date: isoDateSchema.optional(),
+  price: z.number().nonnegative().optional(),
+  /** ISO 4217, e.g. `EUR`. */
+  currency: z
+    .string()
+    .regex(/^[A-Z]{3}$/)
+    .optional(),
+  /** The record shop, a venue of kind `recordShop`. */
+  venueId: idSchema.optional(),
+  /** The trip it was bought on. */
+  tripId: idSchema.optional(),
+  /** A shop, market or person in free text, e.g. when it was a gift. */
+  from: z.string().optional(),
+  gift: z.boolean().default(false),
+});
+export type Acquisition = z.infer<typeof acquisitionSchema>;
+
+export const recordDraftSchema = z.object({
+  ...collectibleShape,
+  /**
+   * Artists as credited on the sleeve. The people behind them and behind `credits` are linked
+   * through `creatorIds`, in the order of `recordPeople()`.
+   */
+  artists: z.array(z.string()).default([]),
+  credits: z.array(creditSchema).default([]),
+  label: z.string().optional(),
+  catalogNumber: z.string().optional(),
+  /** EAN-13 or UPC-A digits as printed. */
+  barcode: z
+    .string()
+    .regex(/^\d{12,13}$/, 'Expected EAN-13 or UPC-A')
+    .optional(),
+  /** Year of the original release. */
+  releaseYear: z.number().int().optional(),
+  /** Year this pressing was made, when it differs from the original. */
+  pressingYear: z.number().int().optional(),
+  /** Country of the pressing as the catalogue gives it, e.g. `US` or `Germany`. */
+  country: z.string().optional(),
+  format: recordFormatSchema.default('lp'),
+  size: recordSizeSchema.optional(),
+  speed: recordSpeedSchema.optional(),
+  discCount: z.number().int().positive().default(1),
+  /** The pressing's variant as named, e.g. `Translucent red`. */
+  variant: z.string().optional(),
+  /** Colour of the vinyl; black when missing. */
+  vinylColor: hexColorSchema.optional(),
+  channels: z.enum(['mono', 'stereo']).optional(),
+  firstPressing: z.boolean().default(false),
+  signed: z.boolean().default(false),
+  /** Matrix or runout etching. */
+  matrix: z.string().optional(),
+  genres: z.array(z.string()).default([]),
+  tracks: z.array(trackSchema).default([]),
+  description: z.string().optional(),
+  ownership: recordOwnershipSchema.default('owned'),
+  conditionMedia: recordGradeSchema.optional(),
+  conditionSleeve: recordGradeSchema.optional(),
+  rating: z.number().int().min(1).max(5).optional(),
+  acquisition: acquisitionSchema.optional(),
+  loan: loanSchema.optional(),
+  source: sourceSchema.optional(),
+  /** MusicBrainz release id. */
+  musicbrainzId: z.string().optional(),
+  /** Discogs release id. */
+  discogsId: z.string().optional(),
+  ...externalIdsShape,
+});
+export const recordSchema = recordDraftSchema.extend(entityMetaShape);
+export type RecordDraft = z.input<typeof recordDraftSchema>;
+/** Named `MusicRecord` because `Record` is TypeScript's built-in utility type. */
+export type MusicRecord = z.infer<typeof recordSchema>;
+
+// ── Spin: one time a record was played ────────────────────────────────────
+
+export const spinDraftSchema = z.object({
+  recordId: idSchema,
+  /** ISO date-time. */
+  playedAt: z.string(),
+  /** Sides played, e.g. `['A', 'B']`; empty means the whole record. */
+  sides: z.array(z.string()).default([]),
+  note: z.string().optional(),
+});
+export const spinSchema = spinDraftSchema.extend(entityMetaShape);
+export type SpinDraft = z.input<typeof spinDraftSchema>;
+export type Spin = z.infer<typeof spinSchema>;
 
 // ── Collection: a user-curated, ordered list of collectibles of any kind ───
 

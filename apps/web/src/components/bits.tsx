@@ -3,6 +3,7 @@ import { Button, cn, DialogContent, Dialog as DialogRoot } from '@mnemo/ui';
 import {
   CastleIcon,
   ChurchIcon,
+  DiscIcon,
   EyeIcon,
   FrameIcon,
   LandmarkIcon,
@@ -19,6 +20,7 @@ const KIND_ICONS: Record<VenueKind, typeof LandmarkIcon> = {
   church: ChurchIcon,
   castle: CastleIcon,
   park: TreesIcon,
+  recordShop: DiscIcon,
   other: MapPinIcon,
 };
 

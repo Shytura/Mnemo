@@ -1,4 +1,5 @@
 export * from './archive';
+export * from './lib/barcode';
 export * from './lib/color';
 export * from './lib/geo';
 export * from './lib/isbn';
@@ -14,4 +15,5 @@ export * from './services/commands';
 export * from './services/creators';
 export * from './services/insights';
 export * from './services/library';
+export * from './services/music';
 export * from './services/queries';

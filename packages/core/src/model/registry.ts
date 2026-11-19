@@ -13,6 +13,10 @@ import {
   mediaSchema,
   placeDraftSchema,
   placeSchema,
+  recordDraftSchema,
+  recordSchema,
+  spinDraftSchema,
+  spinSchema,
   tripDraftSchema,
   tripSchema,
   venueDraftSchema,
@@ -39,6 +43,8 @@ export const entities = {
   visits: { schema: visitSchema, draftSchema: visitDraftSchema },
   artworks: { schema: artworkSchema, draftSchema: artworkDraftSchema },
   books: { schema: bookSchema, draftSchema: bookDraftSchema },
+  records: { schema: recordSchema, draftSchema: recordDraftSchema },
+  spins: { schema: spinSchema, draftSchema: spinDraftSchema },
   collections: { schema: collectionSchema, draftSchema: collectionDraftSchema },
   trips: { schema: tripSchema, draftSchema: tripDraftSchema },
   creators: { schema: creatorSchema, draftSchema: creatorDraftSchema },
@@ -55,6 +61,7 @@ export const entityNames = Object.keys(entities) as EntityName[];
 export const collectibleTables = {
   artwork: 'artworks',
   book: 'books',
+  record: 'records',
 } as const satisfies Record<CollectibleKind, EntityName>;
 
 export type CollectibleOf<K extends CollectibleKind> = EntityOf<(typeof collectibleTables)[K]>;

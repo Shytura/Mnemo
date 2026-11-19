@@ -82,16 +82,20 @@ export function subsetArchive(archive: Archive, items: readonly ItemRef[]): Arch
 
   const artworks = archive.artworks.filter((a) => has({ kind: 'artwork', id: a.id }));
   const books = archive.books.filter((b) => has({ kind: 'book', id: b.id }));
+  const records = archive.records.filter((r) => has({ kind: 'record', id: r.id }));
   // Listing every kind here makes adding a collectible type a compile error until handled.
-  const collectibles = { artwork: artworks, book: books } satisfies Record<
+  const collectibles = { artwork: artworks, book: books, record: records } satisfies Record<
     CollectibleKind,
     CollectibleBase[]
   >;
   const all = Object.values(collectibles).flat();
 
   // Every collectible brings its creators and media; artworks also the venues, places and
-  // visits they were seen at.
-  const venueIds = new Set(artworks.flatMap((a) => (a.venueId ? [a.venueId] : [])));
+  // visits they were seen at, records the shop they were bought in. Listening logs stay private.
+  const venueIds = new Set([
+    ...artworks.flatMap((a) => (a.venueId ? [a.venueId] : [])),
+    ...records.flatMap((r) => (r.acquisition?.venueId ? [r.acquisition.venueId] : [])),
+  ]);
   const venues = archive.venues.filter((v) => venueIds.has(v.id));
   const placeIds = new Set(venues.map((v) => v.placeId));
   const creatorIds = new Set(all.flatMap((c) => c.creatorIds));
@@ -102,6 +106,7 @@ export function subsetArchive(archive: Archive, items: readonly ItemRef[]): Arch
     ...emptySnapshot(),
     artworks,
     books,
+    records,
     venues,
     places: archive.places.filter((p) => placeIds.has(p.id)),
     visits: archive.visits.filter((v) => venueIds.has(v.venueId)),

@@ -2,6 +2,7 @@ import { createRouter } from '@tanstack/react-router';
 import { artRoutes } from '../modules/art/routes';
 import { homeRoutes } from '../modules/home/routes';
 import { libraryRoutes } from '../modules/library/routes';
+import { musicRoutes } from '../modules/music/routes';
 import { peopleRoutes } from '../modules/people/routes';
 import { travelRoutes } from '../modules/travel/routes';
 import { rootRoute } from './root-route';
@@ -12,6 +13,7 @@ const routeTree = rootRoute.addChildren([
   ...homeRoutes,
   ...artRoutes,
   ...libraryRoutes,
+  ...musicRoutes,
   ...peopleRoutes,
   ...travelRoutes,
 ]);

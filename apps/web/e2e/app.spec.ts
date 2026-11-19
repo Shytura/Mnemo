@@ -311,3 +311,48 @@ test('a list mixes a work and a book, and their person shows both', async ({ pag
   await expect(page.getByText('1 Buch in deiner Bibliothek')).toBeVisible();
   await expect(page.getByText('Person', { exact: true })).toBeVisible();
 });
+
+test('a record goes on the wall with its sides, its designer and where it was bought', async ({
+  page,
+}) => {
+  await page.goto('/records');
+  await page.getByRole('button', { name: 'Erste Platte hinzufügen' }).click();
+  const form = page.getByRole('dialog');
+  await form.getByLabel('Titel', { exact: true }).fill('Blue Hour');
+  await form.getByLabel('Künstler:innen').fill('Ada Mercer Quartet');
+  await form.getByLabel('Künstler:innen').press('Enter');
+  await form.getByLabel('Label').fill('Halcyon');
+  await form.getByLabel('Katalognummer').fill('HLC 4012');
+  await form.getByLabel('Erschienen').fill('1961');
+  await form.getByLabel('Barcode').fill('036000291452');
+  await form
+    .getByLabel('Tracklist')
+    .fill('A1  Blue Hour  7:32\nA2  Lamplight  6:28\nB1  The Long Way Home  8:32');
+  await expect(form.getByText('3 Stücke erkannt')).toBeVisible();
+  await form.getByRole('button', { name: 'Person hinzufügen' }).click();
+  await form.getByLabel('Name', { exact: true }).fill('Mara Castell');
+  await form.getByLabel('Gekauft am').fill('2024-05-03');
+  await form.getByLabel('Preis').fill('38');
+  await form.getByLabel('Wo').fill('Flohmarkt am Naschmarkt');
+  await form.getByRole('button', { name: 'Speichern' }).click();
+  await expect(form).toBeHidden();
+
+  await expect(page.getByText('1 Platte', { exact: true })).toBeVisible();
+  await page.getByRole('link', { name: /Blue Hour/ }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Blue Hour' })).toBeVisible();
+  await expect(page.getByText('Im Regal seit Mai 2024')).toBeVisible();
+  await expect(page.getByText('Seite A')).toBeVisible();
+  await expect(page.getByText('Seite B')).toBeVisible();
+  await expect(page.getByText('14:00')).toBeVisible(); // side A
+  await expect(page.getByText(/Gekauft am 3\. Mai 2024 bei Flohmarkt am Naschmarkt/)).toBeVisible();
+
+  // The designer is a person whose page shows the record.
+  await page.getByRole('link', { name: 'Mara Castell' }).click();
+  await expect(page.getByText('1 Platte in deiner Phonothek')).toBeVisible();
+  await expect(page.getByText('Auf Schallplatten', { exact: true })).toBeVisible();
+
+  // Tracks are searchable, and the shelf view files the record spine-out.
+  await page.goto('/records?q=lamplight&view=shelf');
+  await expect(page.getByText('1 Platte', { exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Ada Mercer Quartet – Blue Hour' })).toBeVisible();
+});

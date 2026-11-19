@@ -4,6 +4,7 @@ import type { AppModule, DialogComponents } from '../app/modules';
 import { artModule } from './art';
 import { homeModule } from './home';
 import { libraryModule } from './library';
+import { musicModule } from './music';
 import { peopleModule } from './people';
 import { travelModule } from './travel';
 
@@ -15,6 +16,7 @@ export const appModules: readonly AppModule[] = [
   homeModule,
   artModule,
   libraryModule,
+  musicModule,
   peopleModule,
   travelModule,
 ];

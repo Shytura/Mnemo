@@ -1,4 +1,4 @@
-import { type Trip, type TripStatus, tripStatuses } from '@mnemo/core';
+import { removeTrip, type Trip, type TripStatus, tripStatuses } from '@mnemo/core';
 import {
   Button,
   Chip,
@@ -84,7 +84,7 @@ function TripForm({ trip, onClose }: { trip: Trip | undefined; onClose: () => vo
               description={t('planner.deleteText', { title: trip.title })}
               confirmLabel={t('common.delete')}
               onConfirm={async () => {
-                await store.trips.delete(trip.id);
+                await removeTrip(store, trip.id);
                 onClose();
                 void navigate({ to: '/planner' });
               }}

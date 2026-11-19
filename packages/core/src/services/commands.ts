@@ -80,6 +80,11 @@ export async function removeVenue(store: MnemoStore, id: string): Promise<void> 
     for (const a of await store.artworks.list()) {
       if (a.venueId === id) await store.artworks.update(a.id, { venueId: undefined });
     }
+    for (const r of await store.records.list()) {
+      if (r.acquisition?.venueId === id) {
+        await store.records.update(r.id, { acquisition: { ...r.acquisition, venueId: undefined } });
+      }
+    }
     for (const trip of await store.trips.list()) {
       if (trip.items.some((i) => i.venueId === id)) {
         await store.trips.update(trip.id, {
@@ -107,6 +112,18 @@ export async function removePlace(store: MnemoStore, id: string): Promise<void> 
     const place = await store.places.get(id);
     if (place?.coverMediaId) await store.media.delete(place.coverMediaId);
     await store.places.delete(id);
+  });
+}
+
+/** Deletes a trip; records bought on it keep their other purchase details. */
+export async function removeTrip(store: MnemoStore, id: string): Promise<void> {
+  await store.transaction(async () => {
+    for (const r of await store.records.list()) {
+      if (r.acquisition?.tripId === id) {
+        await store.records.update(r.id, { acquisition: { ...r.acquisition, tripId: undefined } });
+      }
+    }
+    await store.trips.delete(id);
   });
 }
 

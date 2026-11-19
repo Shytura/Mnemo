@@ -6,6 +6,7 @@ import {
   artworkOfTheDay,
   artworkSchema,
   type Book,
+  barcodeVariants,
   bookSchema,
   type Creator,
   collectibleKinds,
@@ -14,6 +15,7 @@ import {
   collectionSchema,
   colorDistance,
   computeInsights,
+  computeMusicInsights,
   contrastRatio,
   createArchive,
   creatorSchema,
@@ -24,23 +26,40 @@ import {
   epochOf,
   filterArtworks,
   filterBooks,
+  filterRecords,
   flagEmoji,
+  formatDuration,
+  formatTracklist,
   isbnFromBarcode,
   isValidIsbn,
   itemIdsOf,
+  type MusicRecord,
   migrateRow,
   migrations,
   NewerSchemaError,
   nearby,
   nextReadings,
+  normalizeBarcode,
   normalizeIsbn,
   type Place,
   parseArchive,
+  parseDuration,
+  parseTracklist,
   parseYear,
+  pickRecord,
   placeSchema,
+  productCodeFromBarcode,
+  recordCreatorId,
+  recordPeople,
+  recordSchema,
+  recordSides,
   SCHEMA_VERSION,
+  type Spin,
+  sameBarcode,
   settingsSchema,
   sortByHue,
+  spinSchema,
+  spinSeconds,
   subsetArchive,
   type Venue,
   type Visit,
@@ -65,6 +84,10 @@ const artwork = (id: string, fields: Partial<Artwork> = {}): Artwork =>
   artworkSchema.parse({ ...meta(id), title: `Werk ${id}`, ...fields });
 const book = (id: string, fields: Partial<Book> = {}): Book =>
   bookSchema.parse({ ...meta(id), title: `Buch ${id}`, ...fields });
+const record = (id: string, fields: Partial<MusicRecord> = {}): MusicRecord =>
+  recordSchema.parse({ ...meta(id), title: `Platte ${id}`, ...fields });
+const spin = (id: string, recordId: string, playedAt: string, sides: string[] = []): Spin =>
+  spinSchema.parse({ ...meta(id), recordId, playedAt, sides });
 
 describe('schemas', () => {
   it('applies defaults', () => {
@@ -253,10 +276,17 @@ describe('insights', () => {
         }),
         book('b3', { creatorIds: ['c3'], ownership: 'wishlist' }),
       ],
+      records: [
+        record('r1', { creatorIds: ['c4'] }),
+        record('r2', { creatorIds: ['c4'], ownership: 'sold' }),
+        record('r3', { creatorIds: ['c4'], ownership: 'wishlist' }),
+      ],
+      spins: [],
       creators: [
         creator('c1', 'Albrecht Dürer'),
         creator('c2', 'Raffael'),
         creator('c3', 'Thomas Mann'),
+        creator('c4', 'Nina Simone'),
       ],
     });
     expect(insights.totals).toMatchObject({
@@ -274,8 +304,10 @@ describe('insights', () => {
     // Works of every kind count; wishlists do not.
     expect(insights.topCreators.map((c) => [c.creator.name, c.count])).toEqual([
       ['Albrecht Dürer', 2],
+      ['Nina Simone', 2],
       ['Thomas Mann', 2],
     ]);
+    expect(insights.music).toMatchObject({ records: 1, wishlist: 1, spins: 0 });
     expect(insights.library).toMatchObject({ books: 2, read: 2, pagesRead: 600 });
     expect(insights.library.reading.map((b) => b.id)).toEqual(['b2']);
     expect(insights.library.lent.map((b) => b.id)).toEqual(['b2']);
@@ -299,10 +331,23 @@ describe('archive', () => {
       artwork('a2', { venueId: 'v2' }),
     ],
     books: [book('b1', { creatorIds: ['c2'], mediaIds: ['m2'] }), book('b2')],
+    records: [
+      record('r1', {
+        creatorIds: ['c3'],
+        mediaIds: ['m3'],
+        acquisition: { venueId: 'v2', gift: false },
+      }),
+      record('r2'),
+    ],
+    spins: [spin('s1', 'r1', '2025-01-01T20:00:00Z')],
     collections: [],
     trips: [],
-    creators: [creator('c1', 'Albrecht Dürer'), creator('c2', 'Thomas Mann')],
-    media: ['m1', 'm2'].map((id) => ({
+    creators: [
+      creator('c1', 'Albrecht Dürer'),
+      creator('c2', 'Thomas Mann'),
+      creator('c3', 'Nina Simone'),
+    ],
+    media: ['m1', 'm2', 'm3'].map((id) => ({
       ...meta(id),
       schemaVersion: SCHEMA_VERSION,
       mime: 'image/webp',
@@ -317,6 +362,7 @@ describe('archive', () => {
     expect(parsed.media.map((m) => m.src)).toEqual([
       'data:image/webp;base64,m1',
       'data:image/webp;base64,m2',
+      'data:image/webp;base64,m3',
     ]);
     expect(archiveToSnapshot(parsed)).toEqual(snapshot);
   });
@@ -333,21 +379,27 @@ describe('archive', () => {
         { kind: 'artwork', id: 'a1' },
         { kind: 'book', id: 'b1' },
         { kind: 'artwork', id: 'a2' },
+        { kind: 'record', id: 'r1' },
       ],
     });
     const subset = subsetArchive(createArchive({ ...snapshot, collections: [list] }), [
       { kind: 'artwork', id: 'a1' },
       { kind: 'book', id: 'b1' },
+      { kind: 'record', id: 'r1' },
     ]);
     expect(subset.artworks.map((a) => a.id)).toEqual(['a1']);
     expect(subset.books.map((b) => b.id)).toEqual(['b1']);
-    expect(subset.venues.map((v) => v.id)).toEqual(['v1']);
+    expect(subset.records.map((r) => r.id)).toEqual(['r1']);
+    // The shop a record came from comes along; the listening log stays private.
+    expect(subset.venues.map((v) => v.id)).toEqual(['v1', 'v2']);
+    expect(subset.spins).toEqual([]);
     expect(subset.visits.map((v) => v.id)).toEqual(['x1']);
-    expect(subset.creators.map((c) => c.id)).toEqual(['c1', 'c2']);
-    expect(subset.media.map((m) => m.id)).toEqual(['m1', 'm2']);
+    expect(subset.creators.map((c) => c.id)).toEqual(['c1', 'c2', 'c3']);
+    expect(subset.media.map((m) => m.id)).toEqual(['m1', 'm2', 'm3']);
     expect(subset.collections[0]?.items).toEqual([
       { kind: 'artwork', id: 'a1' },
       { kind: 'book', id: 'b1' },
+      { kind: 'record', id: 'r1' },
     ]);
     expect(subset.trips).toEqual([]);
   });
@@ -425,6 +477,8 @@ describe('registry & migrations', () => {
       'visits',
       'artworks',
       'books',
+      'records',
+      'spins',
       'collections',
       'trips',
       'creators',
@@ -589,5 +643,204 @@ describe('library queries', () => {
     expect(
       filterBooks(books, { collectionId: 'l', sort: 'title' }, [list]).map((b) => b.id),
     ).toEqual(['b3', 'b1']);
+  });
+});
+
+describe('barcodes', () => {
+  it('validates EAN-13 and UPC-A check digits', () => {
+    expect(normalizeBarcode('0 75678-16412 1')).toBeUndefined();
+    expect(normalizeBarcode('0 36000-29145 2')).toBe('036000291452');
+    expect(normalizeBarcode('075678164125')).toBe('075678164125');
+    expect(normalizeBarcode('4006381333931')).toBe('4006381333931');
+    expect(normalizeBarcode('4006381333932')).toBeUndefined();
+  });
+
+  it('treats a UPC-A and its EAN-13 form as the same product', () => {
+    expect(barcodeVariants('075678164125')).toEqual(['075678164125', '0075678164125']);
+    expect(sameBarcode('0075678164125', '075678164125')).toBe(true);
+    expect(sameBarcode('4006381333931', '075678164125')).toBe(false);
+  });
+
+  it('leaves book barcodes to the ISBN reader', () => {
+    expect(productCodeFromBarcode('9783161484100')).toBeUndefined();
+    expect(productCodeFromBarcode('4006381333931')).toBe('4006381333931');
+  });
+});
+
+describe('records', () => {
+  const kindOfBlue = record('r1', {
+    title: 'Kind of Blue',
+    artists: ['Miles Davis'],
+    credits: [
+      { name: 'John Coltrane', role: 'musician', detail: 'tenor saxophone' },
+      { name: 'miles davis', role: 'producer' },
+      { name: 'Teo Macero', role: 'producer' },
+    ],
+    creatorIds: ['md', 'jc', 'tm'],
+    tracks: [
+      { position: 'A1', title: 'So What', duration: 562 },
+      { position: 'A2', title: 'Freddie Freeloader', duration: 586 },
+      { position: 'B1', title: 'Flamenco Sketches', duration: 566 },
+      { position: 'B2', title: 'All Blues' },
+    ],
+  });
+
+  it('lists everyone named on it once, artists first, aligned with creatorIds', () => {
+    expect(recordPeople(kindOfBlue)).toEqual(['Miles Davis', 'John Coltrane', 'Teo Macero']);
+    expect(recordCreatorId(kindOfBlue, 'Teo Macero')).toBe('tm');
+    expect(recordCreatorId(kindOfBlue, 'MILES DAVIS')).toBe('md');
+    expect(recordCreatorId(kindOfBlue, 'Bill Evans')).toBeUndefined();
+  });
+
+  it('groups tracks into sides and sums known lengths', () => {
+    const sides = recordSides(kindOfBlue.tracks);
+    expect(sides.map((s) => [s.side, s.tracks.length, s.duration])).toEqual([
+      ['A', 2, 1148],
+      ['B', 2, undefined],
+    ]);
+    expect(recordSides([{ position: '1', title: 'Intro' }])[0]?.side).toBeUndefined();
+    expect(spinSeconds(kindOfBlue, { sides: ['a'] })).toBe(1148);
+    expect(spinSeconds(kindOfBlue, { sides: [] })).toBeUndefined();
+  });
+
+  it('formats and parses durations', () => {
+    expect(formatDuration(562)).toBe('9:22');
+    expect(formatDuration(3725)).toBe('1:02:05');
+    expect(parseDuration('9:22')).toBe(562);
+    expect(parseDuration('1:02:05')).toBe(3725);
+    expect(parseDuration('9')).toBeUndefined();
+  });
+
+  it('reads a typed tracklist and writes it back', () => {
+    const tracks = parseTracklist(
+      'A1  So What  9:22\na2. Freddie Freeloader – 9:46\n\nB1 Flamenco Sketches\nSo What (5:37)\n1999',
+    );
+    expect(tracks).toEqual([
+      { position: 'A1', title: 'So What', duration: 562 },
+      { position: 'A2', title: 'Freddie Freeloader', duration: 586 },
+      { position: 'B1', title: 'Flamenco Sketches', duration: undefined },
+      { position: '', title: 'So What', duration: 337 },
+      { position: '', title: '1999', duration: undefined },
+    ]);
+    expect(formatTracklist(tracks.slice(0, 3))).toBe(
+      'A1  So What  9:22\nA2  Freddie Freeloader  9:46\nB1  Flamenco Sketches',
+    );
+  });
+});
+
+describe('record queries', () => {
+  const records = [
+    record('r1', {
+      title: 'Blue Train',
+      artists: ['John Coltrane'],
+      label: 'Blue Note',
+      releaseYear: 1958,
+      genres: ['Jazz'],
+      createdAt: '2024-01-01T00:00:00Z',
+    }),
+    record('r2', {
+      title: 'Abbey Road',
+      artists: ['The Beatles'],
+      label: 'Apple',
+      releaseYear: 1969,
+      genres: ['Rock'],
+      loan: { name: 'Mia', since: '2025-01-01' },
+      createdAt: '2024-03-01T00:00:00Z',
+    }),
+    record('r3', {
+      title: 'Unknown Pleasures',
+      artists: ['Joy Division'],
+      credits: [{ name: 'Peter Saville', role: 'design' }],
+      releaseYear: 1979,
+      ownership: 'wishlist',
+      tracks: [{ position: 'A1', title: 'Disorder' }],
+      createdAt: '2024-02-01T00:00:00Z',
+    }),
+  ];
+  const spins = [
+    spin('s1', 'r1', '2025-06-01T20:00:00Z'),
+    spin('s2', 'r2', '2025-07-01T20:00:00Z'),
+    spin('s3', 'r1', '2024-01-01T20:00:00Z'),
+  ];
+
+  it('filters by facets and searches credits, tracks and loans', () => {
+    const ids = (filter: Parameters<typeof filterRecords>[1]) =>
+      filterRecords(records, filter).map((r) => r.id);
+    expect(ids({ ownership: 'wishlist' })).toEqual(['r3']);
+    expect(ids({ lent: true })).toEqual(['r2']);
+    expect(ids({ genre: 'jazz' })).toEqual(['r1']);
+    expect(ids({ label: 'blue note' })).toEqual(['r1']);
+    expect(ids({ decade: 1960 })).toEqual(['r2']);
+    expect(ids({ artist: 'Peter Saville' })).toEqual(['r3']);
+    expect(ids({ query: 'disorder' })).toEqual(['r3']);
+    expect(ids({ query: 'mia' })).toEqual(['r2']);
+  });
+
+  it('sorts by artist without articles, year and last played', () => {
+    const ids = (sort: Parameters<typeof filterRecords>[1]['sort']) =>
+      filterRecords(records, { sort }, [], spins).map((r) => r.id);
+    expect(ids(undefined)).toEqual(['r2', 'r3', 'r1']);
+    expect(ids('artist')).toEqual(['r2', 'r1', 'r3']);
+    expect(ids('year')).toEqual(['r1', 'r2', 'r3']);
+    expect(ids('played')).toEqual(['r2', 'r1', 'r3']);
+  });
+
+  it('picks a playable record and favours the ones waiting longest', () => {
+    const now = new Date('2026-01-01T12:00:00Z');
+    const shelf = [
+      record('p1', { createdAt: '2020-01-01T00:00:00Z' }),
+      record('p2', { createdAt: '2020-01-01T00:00:00Z' }),
+      record('p3', { ownership: 'wishlist' }),
+      record('p4', { loan: { name: 'Mia', since: '2025-01-01' } }),
+    ];
+    const log = [spin('x', 'p2', '2025-12-31T20:00:00Z'), spin('y', 'p1', '2023-01-01T20:00:00Z')];
+    // p2 was played last, so it is skipped while p1 is available.
+    expect(pickRecord(shelf, log, { now, random: () => 0.99 })?.id).toBe('p1');
+    expect(pickRecord(shelf, [], { now, random: () => 0 })?.id).toBe('p1');
+    expect(pickRecord(shelf, log, { now, dusty: true })?.id).toBe('p1');
+    expect(pickRecord([shelf[2]!], [], { now })).toBeUndefined();
+  });
+
+  it('summarises listening, decades, labels and dusty records', () => {
+    const now = new Date('2026-01-01T12:00:00Z');
+    const shelf = [
+      record('m1', {
+        releaseYear: 1958,
+        label: 'Blue Note',
+        genres: ['Jazz'],
+        tracks: [{ position: 'A1', title: 'Blue Train', duration: 600 }],
+        acquisition: { price: 30, currency: 'EUR', gift: false },
+      }),
+      record('m2', {
+        releaseYear: 1959,
+        label: 'Blue Note',
+        createdAt: '2023-01-01T00:00:00Z',
+        acquisition: { price: 12, currency: 'USD', gift: false },
+      }),
+      record('m3', { releaseYear: 1971, ownership: 'wishlist' }),
+    ];
+    const log = [
+      spin('a', 'm1', '2025-12-24T20:00:00Z'),
+      spin('b', 'm1', '2025-12-25T20:00:00Z', ['A']),
+      spin('c', 'm2', '2024-06-01T20:00:00Z'),
+    ];
+    const music = computeMusicInsights(shelf, log, now);
+    expect(music).toMatchObject({ records: 2, wishlist: 1, spins: 3, listened: 1200 });
+    expect(music.spinsByYear).toEqual([
+      { year: 2024, count: 1 },
+      { year: 2025, count: 2 },
+    ]);
+    expect([...music.spinsByDay.values()].reduce((a, b) => a + b, 0)).toBe(2);
+    expect(music.decades).toEqual([{ decade: 1950, count: 2 }]);
+    expect(music.labels).toEqual([{ name: 'Blue Note', count: 2 }]);
+    expect(music.mostPlayed.map((m) => [m.record.id, m.count])).toEqual([
+      ['m1', 2],
+      ['m2', 1],
+    ]);
+    expect(music.dusty.map((d) => d.record.id)).toEqual(['m2']);
+    expect(music.spent).toEqual([
+      { currency: 'EUR', amount: 30 },
+      { currency: 'USD', amount: 12 },
+    ]);
   });
 });

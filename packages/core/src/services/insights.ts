@@ -1,5 +1,15 @@
 import { sortByHue } from '../lib/color';
-import type { Artwork, Book, Creator, Place, Venue, Visit } from '../model/entities';
+import type {
+  Artwork,
+  Book,
+  Creator,
+  MusicRecord,
+  Place,
+  Spin,
+  Venue,
+  Visit,
+} from '../model/entities';
+import { computeMusicInsights, type MusicInsight } from './music';
 
 export interface InsightsInput {
   places: readonly Place[];
@@ -7,6 +17,8 @@ export interface InsightsInput {
   visits: readonly Visit[];
   artworks: readonly Artwork[];
   books: readonly Book[];
+  records: readonly MusicRecord[];
+  spins: readonly Spin[];
   creators: readonly Creator[];
 }
 
@@ -43,6 +55,7 @@ export interface Insights {
   /** People with the most works across all collectible kinds, wishlists excluded. */
   topCreators: Array<{ creator: Creator; count: number }>;
   library: LibraryInsight;
+  music: MusicInsight;
   topVenues: Array<{ venue: Venue; count: number }>;
   spectrum: string[];
   firstVisit: Visit | undefined;
@@ -60,6 +73,8 @@ export function computeInsights({
   visits,
   artworks,
   books,
+  records,
+  spins,
   creators,
 }: InsightsInput): Insights {
   const seen = artworks.filter((a) => a.status === 'seen');
@@ -121,7 +136,8 @@ export function computeInsights({
   const creatorById = new Map(creators.map((c) => [c.id, c]));
   const creatorCounts = new Map<string, number>();
   const shelved = books.filter((b) => b.ownership !== 'wishlist');
-  for (const item of [...seen, ...shelved]) {
+  const collected = records.filter((r) => r.ownership !== 'wishlist');
+  for (const item of [...seen, ...shelved, ...collected]) {
     for (const id of item.creatorIds) creatorCounts.set(id, (creatorCounts.get(id) ?? 0) + 1);
   }
   const topCreators = [...creatorCounts]
@@ -167,6 +183,7 @@ export function computeInsights({
     visitsByYear,
     topCreators,
     library,
+    music: computeMusicInsights(records, spins),
     topVenues,
     spectrum: sortByHue(seen.flatMap((a) => a.palette.slice(0, 3))),
     firstVisit,

@@ -88,6 +88,11 @@ export const migrations: readonly Migration[] = [
     description: 'Library: books as a second collectible kind',
     tables: {},
   },
+  {
+    to: 5,
+    description: 'Records as a third collectible kind, spins as their listening log',
+    tables: {},
+  },
 ];
 
 export class NewerSchemaError extends Error {

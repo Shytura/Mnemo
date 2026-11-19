@@ -25,6 +25,14 @@ export function useFormat() {
 
   const number = (n: number) => new Intl.NumberFormat(locale).format(n);
 
+  const money = (amount: number, currency = 'EUR') => {
+    try {
+      return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(amount);
+    } catch {
+      return `${number(amount)} ${currency}`;
+    }
+  };
+
   const bytes = (n: number) => {
     const units = ['B', 'KB', 'MB', 'GB'];
     let value = n;
@@ -63,7 +71,7 @@ export function useFormat() {
     return '';
   };
 
-  return { locale, date, number, bytes, country, language, lifespan };
+  return { locale, date, number, money, bytes, country, language, lifespan };
 }
 
 /** Roman numerals for the editorial section numbering. */
