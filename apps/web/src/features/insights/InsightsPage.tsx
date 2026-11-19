@@ -1,10 +1,19 @@
-import { epochOf, epochs, type LibraryInsight, parseYear } from '@mnemo/core';
+import {
+  epochOf,
+  epochs,
+  formatDuration,
+  type LibraryInsight,
+  type MusicInsight,
+  parseYear,
+  todayIsoDate,
+} from '@mnemo/core';
 import { EmptyState, PageHeader, SectionTitle, Stat } from '@mnemo/ui';
 import { Link } from '@tanstack/react-router';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useArtworks, useInsights } from '../../app/data';
 import { Flag } from '../../components/bits';
+import { RecordCard } from '../../components/RecordCard';
 import { useFormat } from '../../lib/format';
 
 export function InsightsPage() {
@@ -30,7 +39,12 @@ export function InsightsPage() {
   if (!insights) return null;
   const { totals } = insights;
 
-  if (totals.visits === 0 && totals.artworks === 0 && insights.library.books === 0) {
+  if (
+    totals.visits === 0 &&
+    totals.artworks === 0 &&
+    insights.library.books === 0 &&
+    insights.music.records === 0
+  ) {
     return (
       <>
         <PageHeader eyebrow={t('insights.eyebrow')} title={t('insights.title')} />
@@ -51,14 +65,20 @@ export function InsightsPage() {
         lede={since ? t('insights.ledeSince', { since }) : t('insights.lede')}
       />
 
-      <section className="grid grid-cols-2 gap-x-6 gap-y-12 border-b border-line py-14 md:grid-cols-3 lg:grid-cols-6">
-        <Stat value={totals.countries} label={t('stats.countries', { count: totals.countries })} />
-        <Stat value={totals.places} label={t('stats.cities', { count: totals.places })} />
-        <Stat value={totals.venues} label={t('stats.venues', { count: totals.venues })} />
-        <Stat value={totals.visits} label={t('stats.visits', { count: totals.visits })} />
-        <Stat value={totals.artworks} label={t('stats.artworks', { count: totals.artworks })} />
-        <Stat value={totals.wishlist} label={t('stats.wishlist', { count: totals.wishlist })} />
-      </section>
+      {/* Travel and art figures only once there is something to count. */}
+      {(totals.visits > 0 || totals.artworks > 0 || totals.wishlist > 0) && (
+        <section className="grid grid-cols-2 gap-x-6 gap-y-12 border-b border-line py-14 md:grid-cols-3 lg:grid-cols-6">
+          <Stat
+            value={totals.countries}
+            label={t('stats.countries', { count: totals.countries })}
+          />
+          <Stat value={totals.places} label={t('stats.cities', { count: totals.places })} />
+          <Stat value={totals.venues} label={t('stats.venues', { count: totals.venues })} />
+          <Stat value={totals.visits} label={t('stats.visits', { count: totals.visits })} />
+          <Stat value={totals.artworks} label={t('stats.artworks', { count: totals.artworks })} />
+          <Stat value={totals.wishlist} label={t('stats.wishlist', { count: totals.wishlist })} />
+        </section>
+      )}
 
       {insights.spectrum.length > 0 && (
         <section className="mt-20">
@@ -113,6 +133,7 @@ export function InsightsPage() {
       </div>
 
       {insights.library.books > 0 && <LibrarySection library={insights.library} />}
+      {insights.music.records > 0 && <MusicSection music={insights.music} />}
 
       <div className="mt-20 grid grid-cols-1 gap-16 lg:grid-cols-3">
         <section>
@@ -126,31 +147,35 @@ export function InsightsPage() {
             }))}
           />
         </section>
-        <section>
-          <SectionTitle>{t('insights.venues')}</SectionTitle>
-          <RankList
-            items={insights.topVenues.map((v) => ({
-              key: v.venue.id,
-              label: v.venue.name,
-              value: v.count,
-              venueId: v.venue.id,
-            }))}
-          />
-        </section>
-        <section>
-          <SectionTitle>{t('insights.countries')}</SectionTitle>
-          <ul className="space-y-3">
-            {insights.countries.map((c) => (
-              <li key={c.code ?? c.name} className="flex items-center gap-3">
-                <Flag code={c.code} className="text-2xl" />
-                <span className="flex-1 text-sm">{format.country(c.code, c.name)}</span>
-                <span className="text-xs text-ink-3 tabular-nums">
-                  {t('stats.cities', { count: c.places.length })}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </section>
+        {insights.topVenues.length > 0 && (
+          <section>
+            <SectionTitle>{t('insights.venues')}</SectionTitle>
+            <RankList
+              items={insights.topVenues.map((v) => ({
+                key: v.venue.id,
+                label: v.venue.name,
+                value: v.count,
+                venueId: v.venue.id,
+              }))}
+            />
+          </section>
+        )}
+        {insights.countries.length > 0 && (
+          <section>
+            <SectionTitle>{t('insights.countries')}</SectionTitle>
+            <ul className="space-y-3">
+              {insights.countries.map((c) => (
+                <li key={c.code ?? c.name} className="flex items-center gap-3">
+                  <Flag code={c.code} className="text-2xl" />
+                  <span className="flex-1 text-sm">{format.country(c.code, c.name)}</span>
+                  <span className="text-xs text-ink-3 tabular-nums">
+                    {t('stats.cities', { count: c.places.length })}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
       </div>
     </>
   );
@@ -192,6 +217,175 @@ function LibrarySection({ library }: { library: LibraryInsight }) {
         </div>
       )}
     </section>
+  );
+}
+
+function MusicSection({ music }: { music: MusicInsight }) {
+  const { t } = useTranslation();
+  const format = useFormat();
+  const hours = Math.round(music.listened / 3600);
+  return (
+    <section className="mt-20">
+      <SectionTitle>{t('insights.music')}</SectionTitle>
+      <div className="grid grid-cols-2 gap-x-6 gap-y-12 py-6 md:grid-cols-4">
+        <Stat value={music.records} label={t('stats.records', { count: music.records })} />
+        <Stat value={music.spins} label={t('stats.spins', { count: music.spins })} />
+        <Stat
+          value={hours > 0 ? format.number(hours) : formatDuration(music.listened)}
+          label={hours > 0 ? t('stats.hoursListened', { count: hours }) : t('stats.listened')}
+        />
+        <Stat value={music.wishlist} label={t('stats.recordWishlist', { count: music.wishlist })} />
+      </div>
+      {music.spins > 0 && (
+        <div className="mt-10">
+          <p className="eyebrow mb-4 text-ink-3">{t('insights.listeningYear')}</p>
+          <SpinCalendar days={music.spinsByDay} />
+        </div>
+      )}
+      <div className="mt-16 grid grid-cols-1 gap-16 lg:grid-cols-3">
+        {music.decades.length > 0 && (
+          <section className="lg:col-span-1">
+            <p className="eyebrow mb-4 text-ink-3">{t('insights.decades')}</p>
+            <ColumnChart
+              data={music.decades.map((d) => ({
+                key: String(d.decade),
+                label: t('records.decadeName', { decade: d.decade }),
+                value: d.count,
+              }))}
+              caption={t('insights.decades')}
+              valueLabel={(n) => t('stats.records', { count: n })}
+              compactLabels
+            />
+          </section>
+        )}
+        {music.genres.length > 0 && (
+          <section>
+            <p className="eyebrow mb-4 text-ink-3">{t('insights.genres')}</p>
+            <RankList
+              items={music.genres.map((g) => ({
+                key: g.name,
+                label: g.name,
+                value: g.count,
+                recordsSearch: { genre: g.name },
+              }))}
+            />
+          </section>
+        )}
+        {music.labels.length > 0 && (
+          <section>
+            <p className="eyebrow mb-4 text-ink-3">{t('insights.labels')}</p>
+            <RankList
+              items={music.labels.map((l) => ({
+                key: l.name,
+                label: l.name,
+                value: l.count,
+                recordsSearch: { label: l.name },
+              }))}
+            />
+          </section>
+        )}
+        {music.mostPlayed.length > 0 && (
+          <section>
+            <p className="eyebrow mb-4 text-ink-3">{t('insights.mostPlayed')}</p>
+            <RankList
+              items={music.mostPlayed.map((m) => ({
+                key: m.record.id,
+                label: m.record.title,
+                value: m.count,
+                recordId: m.record.id,
+              }))}
+            />
+          </section>
+        )}
+      </div>
+      {music.dusty.length > 0 && (
+        <div className="mt-16">
+          <p className="eyebrow mb-1 text-ink-3">{t('insights.dusty')}</p>
+          <p className="caption mb-6 text-lg text-ink-3">{t('insights.dustyText')}</p>
+          <div className="grid grid-cols-3 gap-x-5 gap-y-8 sm:grid-cols-4 lg:grid-cols-6">
+            {music.dusty.slice(0, 6).map(({ record }) => (
+              <RecordCard key={record.id} record={record} />
+            ))}
+          </div>
+        </div>
+      )}
+      {music.spent.length > 0 && (
+        <p className="mt-12 text-sm text-ink-3">
+          {t('insights.spent', {
+            amount: music.spent.map((s) => format.money(s.amount, s.currency)).join(' · '),
+          })}
+        </p>
+      )}
+    </section>
+  );
+}
+
+const WEEKS = 53;
+
+/**
+ * A year of listening, one square per day and one column per week, the way a diary is kept:
+ * darker squares are days with more records played.
+ */
+function SpinCalendar({ days }: { days: Map<string, number> }) {
+  const { t } = useTranslation();
+  const format = useFormat();
+  const today = new Date();
+  // Columns start on Monday; the last column holds the current week.
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - ((today.getDay() + 6) % 7) - (WEEKS - 1) * 7);
+  const cells = Array.from({ length: WEEKS * 7 }, (_, i) => {
+    const date = new Date(monday);
+    date.setDate(monday.getDate() + i);
+    const iso = todayIsoDate(date);
+    return { iso, count: days.get(iso) ?? 0, future: date > today };
+  });
+  // A month is named above the first week that starts in it.
+  const months = cells.filter((c, i) => i % 7 === 0 && Number(c.iso.slice(8)) <= 7);
+  return (
+    <figure className="overflow-x-auto pb-2">
+      <div className="min-w-[640px]">
+        <div
+          className="grid grid-flow-col grid-rows-7 gap-[3px]"
+          style={{ gridTemplateColumns: `repeat(${WEEKS}, minmax(0, 1fr))` }}
+          role="img"
+          aria-label={t('insights.listeningYear')}
+        >
+          {cells.map((c) => (
+            <span
+              key={c.iso}
+              title={
+                c.future
+                  ? undefined
+                  : `${format.date(c.iso, 'medium')}: ${t('stats.spins', { count: c.count })}`
+              }
+              className="aspect-square rounded-[2px]"
+              style={{
+                background: c.future
+                  ? 'transparent'
+                  : c.count === 0
+                    ? 'var(--mn-line)'
+                    : `color-mix(in oklab, var(--mn-accent) ${Math.min(100, 35 + c.count * 22)}%, transparent)`,
+              }}
+            />
+          ))}
+        </div>
+        <div
+          className="mt-2 grid text-[0.625rem] text-ink-3"
+          style={{ gridTemplateColumns: `repeat(${WEEKS}, minmax(0, 1fr))` }}
+          aria-hidden="true"
+        >
+          {months.map((c) => (
+            <span
+              key={c.iso}
+              style={{ gridColumnStart: Math.floor(cells.indexOf(c) / 7) + 1 }}
+              className="whitespace-nowrap"
+            >
+              {new Date(`${c.iso}T12:00:00`).toLocaleDateString(format.locale, { month: 'short' })}
+            </span>
+          ))}
+        </div>
+      </div>
+    </figure>
   );
 }
 
@@ -269,6 +463,9 @@ type RankItem = {
   value: number;
   creatorId?: string;
   venueId?: string;
+  recordId?: string;
+  /** A link into the record collection filtered by this value. */
+  recordsSearch?: { genre?: string; label?: string };
 };
 
 function RankList({ items }: { items: RankItem[] }) {
@@ -285,6 +482,22 @@ function RankList({ items }: { items: RankItem[] }) {
                 <Link
                   to="/creator/$creatorId"
                   params={{ creatorId: item.creatorId }}
+                  className="min-w-0 flex-1 truncate hover:text-accent"
+                >
+                  {label}
+                </Link>
+              ) : item.recordId ? (
+                <Link
+                  to="/record/$recordId"
+                  params={{ recordId: item.recordId }}
+                  className="min-w-0 flex-1 truncate hover:text-accent"
+                >
+                  {label}
+                </Link>
+              ) : item.recordsSearch ? (
+                <Link
+                  to="/records"
+                  search={item.recordsSearch}
                   className="min-w-0 flex-1 truncate hover:text-accent"
                 >
                   {label}

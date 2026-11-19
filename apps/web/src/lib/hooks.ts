@@ -35,3 +35,17 @@ export function useMediaQuery(query: string): boolean {
   }, [query]);
   return matches;
 }
+
+/**
+ * Re-renders every `intervalMs` and returns the time of this render, for views that change as
+ * time passes (a record that stops playing). Data changes re-render too and get a fresh time,
+ * so something logged a moment ago is never in the future.
+ */
+export function useNow(intervalMs = 60_000): Date {
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const timer = setInterval(() => setTick((n) => n + 1), intervalMs);
+    return () => clearInterval(timer);
+  }, [intervalMs]);
+  return new Date();
+}

@@ -30,6 +30,7 @@ import {
   PlusIcon,
   ScanBarcodeIcon,
   SearchIcon,
+  ShuffleIcon,
   SlidersHorizontalIcon,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -146,6 +147,11 @@ export function RecordsPage() {
                 <Link to="/list/$collectionId" params={{ collectionId: activeCollection.id }}>
                   <ListIcon /> {t('lists.open')}
                 </Link>
+              </Button>
+            )}
+            {(records ?? []).some((r) => r.ownership === 'owned') && (
+              <Button variant="outline" onClick={() => dialogs.open({ type: 'whatToPlay' })}>
+                <ShuffleIcon /> {t('record.pick.title')}
               </Button>
             )}
             <Button

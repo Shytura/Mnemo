@@ -19,6 +19,7 @@ import {
   useInsights,
   useLookups,
   useProviderContext,
+  useRecords,
   useTrips,
   useVisits,
 } from '../../app/data';
@@ -32,6 +33,7 @@ import { ReadingNow } from '../../components/ReadingNow';
 import { useWikiSummary } from '../../components/WikiSummary';
 import { seedDemo } from '../../lib/demo';
 import { useFormat } from '../../lib/format';
+import { OnTheTurntable } from '../music/OnTheTurntable';
 
 function greetingKey(hour: number) {
   if (hour < 11) return 'salon.greeting.morning';
@@ -43,8 +45,9 @@ export function SalonPage() {
   const artworks = useArtworks();
   const visits = useVisits();
   const books = useBooks();
+  const records = useRecords();
 
-  if (!artworks || !visits || !books) {
+  if (!artworks || !visits || !books || !records) {
     return (
       <div className="grid gap-12 lg:grid-cols-[7fr_5fr]">
         <Skeleton className="aspect-[4/3]" />
@@ -55,7 +58,7 @@ export function SalonPage() {
       </div>
     );
   }
-  if (artworks.length === 0 && visits.length === 0 && books.length === 0) return <Welcome />;
+  if (artworks.length + visits.length + books.length + records.length === 0) return <Welcome />;
   return <Salon />;
 }
 
@@ -134,7 +137,9 @@ function Salon() {
         <section
           className={cn(
             'grid grid-cols-2 gap-x-6 gap-y-10 border-y border-line py-12',
-            insights.library.books > 0 ? 'md:grid-cols-5' : 'md:grid-cols-4',
+            ['md:grid-cols-4', 'md:grid-cols-5', 'md:grid-cols-6'][
+              Number(insights.library.books > 0) + Number(insights.music.records > 0)
+            ],
           )}
         >
           <Stat
@@ -159,6 +164,12 @@ function Salon() {
               label={t('stats.books', { count: insights.library.books })}
             />
           )}
+          {insights.music.records > 0 && (
+            <Stat
+              value={insights.music.records}
+              label={t('stats.records', { count: insights.music.records })}
+            />
+          )}
         </section>
       )}
 
@@ -179,6 +190,8 @@ function Salon() {
           <ReadingNow books={insights.library.reading} bare />
         </section>
       )}
+
+      <OnTheTurntable />
 
       {recent.length > 0 && (
         <section>

@@ -346,6 +346,12 @@ test('a record goes on the wall with its sides, its designer and where it was bo
   await expect(page.getByText('14:00')).toBeVisible(); // side A
   await expect(page.getByText(/Gekauft am 3\. Mai 2024 bei Flohmarkt am Naschmarkt/)).toBeVisible();
 
+  // Putting it on logs a spin; the record turns until its sides have played.
+  await page.getByRole('button', { name: 'Auflegen' }).click();
+  await expect(page.getByText('„Blue Hour“ läuft')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Läuft gerade' })).toBeVisible();
+  await expect(page.getByText(/^Einmal gehört/)).toBeVisible();
+
   // The designer is a person whose page shows the record.
   await page.getByRole('link', { name: 'Mara Castell' }).click();
   await expect(page.getByText('1 Platte in deiner Phonothek')).toBeVisible();

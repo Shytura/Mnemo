@@ -11,6 +11,10 @@ declare module '../../app/dialogs' {
     recordLoan: { recordId: string };
     /** Catalogue search and barcode lookup; `scan` opens the camera right away. */
     addRecord: { ownership?: RecordOwnership; scan?: boolean };
+    /** Logs a spin with date, sides and a note; the quick way is the play button. */
+    spin: { recordId: string };
+    /** A random record from the shelf; `genre` narrows the choice from the start. */
+    whatToPlay: { genre?: string };
   }
 }
 
@@ -49,6 +53,14 @@ export const musicModule: AppModule = {
     addRecord: lazyDialog(
       () => import('../../features/music/AddRecord'),
       (m) => m.AddRecordDialog,
+    ),
+    spin: lazyDialog(
+      () => import('../../features/music/SpinDialogs'),
+      (m) => m.SpinDialog,
+    ),
+    whatToPlay: lazyDialog(
+      () => import('../../features/music/SpinDialogs'),
+      (m) => m.WhatToPlayDialog,
     ),
     recordLoan: lazyDialog(
       () => import('../../features/music/RecordDialogs'),

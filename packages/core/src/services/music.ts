@@ -260,6 +260,26 @@ export function latestSpin(spins: readonly Spin[]): Spin | undefined {
 
 const DAY = 86_400_000;
 
+/** How long a spin is assumed to run when its length is unknown: about one side. */
+const UNKNOWN_SPIN_SECONDS = 25 * 60;
+
+/**
+ * The record on the turntable right now: the latest spin, while the sides it names (or the whole
+ * record) would still be playing.
+ */
+export function nowPlaying(
+  records: readonly MusicRecord[],
+  spins: readonly Spin[],
+  now = new Date(),
+): { record: MusicRecord; spin: Spin; endsAt: Date } | undefined {
+  const spin = latestSpin(spins);
+  const record = spin && records.find((r) => r.id === spin.recordId);
+  if (!spin || !record) return undefined;
+  const started = new Date(spin.playedAt).getTime();
+  const endsAt = new Date(started + (spinSeconds(record, spin) ?? UNKNOWN_SPIN_SECONDS) * 1000);
+  return started <= now.getTime() && endsAt > now ? { record, spin, endsAt } : undefined;
+}
+
 /** Whole days since a record was last played, or since it joined the collection if never. */
 export function daysSincePlayed(
   record: Pick<MusicRecord, 'createdAt' | 'acquisition'>,

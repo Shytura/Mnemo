@@ -5,6 +5,7 @@ import {
   formatDuration,
   type ItemRef,
   type MusicRecord,
+  nowPlaying,
   type RecordGrade,
   recordCreatorId,
   recordDuration,
@@ -12,6 +13,7 @@ import {
   recordSides,
   removeRecord,
   returnRecord,
+  spinSeconds,
   todayIsoDate,
   toggleInCollection,
 } from '@mnemo/core';
@@ -37,14 +39,17 @@ import {
   ArrowLeftIcon,
   ArrowUpRightIcon,
   CheckIcon,
+  DiscIcon,
   EllipsisIcon,
   GiftIcon,
   HandshakeIcon,
   HeartIcon,
+  HistoryIcon,
   ListPlusIcon,
   MapIcon,
   PencilIcon,
   ShoppingBagIcon,
+  ShuffleIcon,
   Trash2Icon,
 } from 'lucide-react';
 import { type ReactNode, useEffect, useMemo, useState } from 'react';
@@ -56,6 +61,7 @@ import {
   useLookups,
   useRecord,
   useRecords,
+  useSpins,
   useTrips,
 } from '../../app/data';
 import { useDialogs } from '../../app/dialogs';
@@ -65,7 +71,9 @@ import { RecordCard } from '../../components/RecordCard';
 import { RecordSleeve, VinylDisc } from '../../components/RecordSleeve';
 import { usePaletteAccent } from '../../lib/accent';
 import { useFormat } from '../../lib/format';
+import { useNow } from '../../lib/hooks';
 import { gradeKey } from './grades';
+import { usePlayRecord } from './SpinDialogs';
 
 const routeApi = getRouteApi('/record/$recordId');
 
@@ -81,6 +89,9 @@ export function RecordDetailPage() {
   const allRecords = useRecords();
   const accentStyle = usePaletteAccent(record?.palette);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const spins = useSpins();
+  const now = useNow();
+  const play = usePlayRecord();
 
   const moreByArtist = useMemo(() => {
     if (!record || !allRecords) return [];
@@ -116,6 +127,7 @@ export function RecordDetailPage() {
   }
 
   const ref: ItemRef = { kind: 'record', id: record.id };
+  const playing = nowPlaying(allRecords ?? [], spins ?? [], now)?.record.id === record.id;
   const memberOf = (collections ?? []).filter((c) => collectionHas(c, ref));
 
   return (
@@ -129,7 +141,7 @@ export function RecordDetailPage() {
 
       <div className="grid gap-10 md:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] md:gap-14 lg:grid-cols-[minmax(0,28rem)_minmax(0,1fr)]">
         <div className="mx-auto w-full max-w-sm md:max-w-none">
-          <SleeveWithRecord record={record} />
+          <SleeveWithRecord record={record} spinning={playing} />
           {record.palette.length > 0 && (
             <div className="mt-6 flex h-2 w-[78%] overflow-hidden rounded-full">
               {record.palette.map((c) => (
@@ -155,6 +167,18 @@ export function RecordDetailPage() {
           <ObjectLabel record={record} />
 
           <div className="mt-8 flex flex-wrap items-center gap-2">
+            {record.ownership === 'owned' && (
+              <Button
+                className="rounded-full"
+                variant={playing ? 'accent' : 'solid'}
+                aria-pressed={playing}
+                // While it plays, the button only says so; a second spin would count twice.
+                onClick={() => !playing && void play(record)}
+              >
+                <DiscIcon className={cn(playing && 'animate-spin [animation-duration:1.8s]')} />
+                {playing ? t('record.spin.nowPlaying') : t('record.spin.play')}
+              </Button>
+            )}
             <Tooltip content={record.favorite ? t('record.unfavorite') : t('record.favorite')}>
               <Button
                 variant={record.favorite ? 'accent' : 'outline'}
@@ -202,6 +226,14 @@ export function RecordDetailPage() {
                   <ListPlusIcon /> {t('collection.new')}
                 </MenuItem>
                 <MenuSeparator />
+                <MenuItem onSelect={() => dialogs.open({ type: 'spin', recordId: record.id })}>
+                  <HistoryIcon /> {t('record.spin.logEarlier')}
+                </MenuItem>
+                {record.ownership === 'owned' && (
+                  <MenuItem onSelect={() => dialogs.open({ type: 'whatToPlay' })}>
+                    <ShuffleIcon /> {t('record.pick.title')}
+                  </MenuItem>
+                )}
                 {record.ownership === 'owned' && !record.loan && (
                   <MenuItem
                     onSelect={() => dialogs.open({ type: 'recordLoan', recordId: record.id })}
@@ -264,6 +296,7 @@ export function RecordDetailPage() {
       <Tracklist record={record} />
       <Credits record={record} />
       <Provenance record={record} />
+      <ListeningLog record={record} />
 
       {moreByArtist.length > 0 && (
         <section className="mt-24">
@@ -709,5 +742,65 @@ function LoanNote({ record }: { record: MusicRecord }) {
         {t('book.giveBack')}
       </Button>
     </div>
+  );
+}
+
+/** Every time the record was played, latest first. */
+function ListeningLog({ record }: { record: MusicRecord }) {
+  const { t } = useTranslation();
+  const format = useFormat();
+  const store = useStore();
+  const all = useSpins();
+  const [expanded, setExpanded] = useState(false);
+  const spins = (all ?? []).filter((s) => s.recordId === record.id);
+  if (spins.length === 0) return null;
+  const shown = expanded ? spins : spins.slice(0, 6);
+  const minutes = Math.round(spins.reduce((sum, s) => sum + (spinSeconds(record, s) ?? 0), 0) / 60);
+  return (
+    <section className="mt-20">
+      <SectionTitle>{t('record.spin.log')}</SectionTitle>
+      <p className="caption -mt-2 mb-6 text-lg text-ink-3">
+        {t('record.spin.summary', { count: spins.length })}
+        {minutes >= 120
+          ? ` · ${t('record.spin.hours', { count: Math.round(minutes / 60) })}`
+          : minutes > 0 && ` · ${t('record.spin.minutes', { count: minutes })}`}
+      </p>
+      <ol className="space-y-2 border-l border-line-strong pl-5 text-sm">
+        {shown.map((spin) => (
+          <li
+            key={spin.id}
+            className="group relative flex items-baseline gap-3 text-ink-2 before:absolute before:top-1.5 before:-left-[1.4rem] before:size-2 before:rounded-full before:bg-accent"
+          >
+            <span className="tabular-nums">
+              {format.date(spin.playedAt, 'medium')},{' '}
+              {new Date(spin.playedAt).toLocaleTimeString(format.locale, {
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </span>
+            {spin.sides.length > 0 && (
+              <span className="text-xs text-ink-3">
+                {spin.sides.map((side) => t('record.side', { side })).join(', ')}
+              </span>
+            )}
+            {spin.note && <span className="caption text-ink-2">{spin.note}</span>}
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              aria-label={t('common.delete')}
+              className="ml-auto opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
+              onClick={() => void store.spins.delete(spin.id)}
+            >
+              <Trash2Icon />
+            </Button>
+          </li>
+        ))}
+      </ol>
+      {spins.length > shown.length && (
+        <Button variant="link" size="sm" className="mt-3" onClick={() => setExpanded(true)}>
+          {t('record.spin.showAll', { count: spins.length })}
+        </Button>
+      )}
+    </section>
   );
 }

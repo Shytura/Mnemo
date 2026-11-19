@@ -41,6 +41,7 @@ import {
   nextReadings,
   normalizeBarcode,
   normalizeIsbn,
+  nowPlaying,
   type Place,
   parseArchive,
   parseDuration,
@@ -799,6 +800,21 @@ describe('record queries', () => {
     expect(pickRecord(shelf, [], { now, random: () => 0 })?.id).toBe('p1');
     expect(pickRecord(shelf, log, { now, dusty: true })?.id).toBe('p1');
     expect(pickRecord([shelf[2]!], [], { now })).toBeUndefined();
+  });
+
+  it('knows what is on the turntable while its sides are still playing', () => {
+    const shelf = [
+      record('n1', { tracks: [{ position: 'A1', title: 'Side A', duration: 1200 }] }),
+      record('n2'),
+    ];
+    const log = [spin('a', 'n1', '2026-01-01T20:00:00Z', ['A'])];
+    const at = (iso: string) => nowPlaying(shelf, log, new Date(iso))?.record.id;
+    expect(at('2026-01-01T20:10:00Z')).toBe('n1');
+    expect(at('2026-01-01T20:21:00Z')).toBeUndefined();
+    // A record of unknown length counts as playing for about one side.
+    const unknown = [...log, spin('b', 'n2', '2026-01-01T21:00:00Z')];
+    expect(nowPlaying(shelf, unknown, new Date('2026-01-01T21:20:00Z'))?.record.id).toBe('n2');
+    expect(nowPlaying(shelf, unknown, new Date('2026-01-01T21:30:00Z'))).toBeUndefined();
   });
 
   it('summarises listening, decades, labels and dusty records', () => {
