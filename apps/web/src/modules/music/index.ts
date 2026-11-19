@@ -9,6 +9,8 @@ declare module '../../app/dialogs' {
     /** `prefill` comes from a catalogue or the scanner; without `recordId` a record is created. */
     record: { recordId?: string; prefill?: RecordPrefill & { ownership?: RecordOwnership } };
     recordLoan: { recordId: string };
+    /** Catalogue search and barcode lookup; `scan` opens the camera right away. */
+    addRecord: { ownership?: RecordOwnership; scan?: boolean };
   }
 }
 
@@ -28,7 +30,7 @@ export const musicModule: AppModule = {
     {
       quickAddKey: 'record',
       icon: DiscIcon,
-      dialog: { type: 'record' },
+      dialog: { type: 'addRecord' },
       order: 17,
       group: 'record',
     },
@@ -43,6 +45,10 @@ export const musicModule: AppModule = {
     record: lazyDialog(
       () => import('../../features/music/RecordForm'),
       (m) => m.RecordFormDialog,
+    ),
+    addRecord: lazyDialog(
+      () => import('../../features/music/AddRecord'),
+      (m) => m.AddRecordDialog,
     ),
     recordLoan: lazyDialog(
       () => import('../../features/music/RecordDialogs'),

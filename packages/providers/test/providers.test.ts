@@ -3,20 +3,29 @@ import {
   aicProvider,
   availableArtProviders,
   availableBookProviders,
+  availableRecordProviders,
   buildDnbQuery,
   buildOverpassQuery,
   buildWikidataQuery,
+  carrierFrom,
   commonsFileName,
+  creditRoleFrom,
+  discogsProvider,
   dnbProvider,
   fetchJson,
   googleBooksProvider,
   lookupIsbn,
+  lookupRecordBarcode,
   mapAic,
   mapCleveland,
+  mapDiscogsRelease,
+  mapDiscogsSearch,
   mapDnb,
   mapEuropeana,
   mapGoogleBooks,
   mapMetObject,
+  mapMusicBrainzDetails,
+  mapMusicBrainzSearch,
   mapOpenLibraryBook,
   mapOpenLibrarySearch,
   mapOverpass,
@@ -26,6 +35,7 @@ import {
   mapWikidataPerson,
   mergeBookResults,
   metProvider,
+  musicBrainzProvider,
   openLibraryProvider,
   overpassProvider,
   ProviderError,
@@ -40,11 +50,16 @@ import {
 } from '../src';
 import aicSearch from './fixtures/aic-search.json';
 import cmaSearch from './fixtures/cma-search.json';
+import discogsRelease from './fixtures/discogs-release.json';
+import discogsSearch from './fixtures/discogs-search.json';
 import dnbIsbn from './fixtures/dnb-isbn.xml?raw';
 import dnbSearch from './fixtures/dnb-search.xml?raw';
 import googleBooksSearch from './fixtures/googlebooks-search.json';
 import metObject from './fixtures/met-object.json';
 import metSearch from './fixtures/met-search.json';
+import musicBrainzBarcode from './fixtures/musicbrainz-barcode.json';
+import musicBrainzRelease from './fixtures/musicbrainz-release.json';
+import musicBrainzSearch from './fixtures/musicbrainz-search.json';
 import openLibraryIsbn from './fixtures/openlibrary-isbn.json';
 import openLibrarySearch from './fixtures/openlibrary-search.json';
 import overpass from './fixtures/overpass.json';
@@ -131,6 +146,7 @@ describe('art provider mapping', () => {
       'europeana',
       'harvard',
       'googlebooks',
+      'discogs',
     ]);
   });
 });
@@ -517,5 +533,172 @@ describe('book catalogues', () => {
     expect(new URL(String(fetch.mock.calls[1]?.[0])).searchParams.get('query')).toBe(
       'WOE=zauberberg and WOE=mann and mat=books',
     );
+  });
+});
+
+describe('record catalogues', () => {
+  it('maps MusicBrainz search results with vinyl pressings first', () => {
+    const results = mapMusicBrainzSearch(musicBrainzSearch);
+    expect(results[0]).toEqual({
+      provider: 'musicbrainz',
+      externalId: 'bee5e0cd-1767-4a8e-9578-6455e87ba60b',
+      title: 'Kind of Blue',
+      artists: ['Miles Davis'],
+      label: 'Columbia',
+      catalogNumber: 'CS 8163',
+      year: 1959,
+      country: 'US',
+      formatText: '12" Vinyl',
+      vinyl: true,
+      format: 'lp',
+      size: '12',
+      discCount: 1,
+      coverUrl:
+        'https://coverartarchive.org/release/bee5e0cd-1767-4a8e-9578-6455e87ba60b/front-500',
+      thumbUrl:
+        'https://coverartarchive.org/release/bee5e0cd-1767-4a8e-9578-6455e87ba60b/front-250',
+      url: 'https://musicbrainz.org/release/bee5e0cd-1767-4a8e-9578-6455e87ba60b',
+    });
+    // The SACD that ranked first in the response follows the vinyl.
+    expect(results.at(-1)?.vinyl).toBe(false);
+    expect(results.find((r) => r.externalId.startsWith('fa731de1'))).toMatchObject({
+      format: 'cd',
+      barcode: '4547366033267',
+    });
+  });
+
+  it('maps a release found by barcode with all its discs', () => {
+    expect(mapMusicBrainzSearch(musicBrainzBarcode)).toEqual([
+      expect.objectContaining({
+        label: 'Music on Vinyl',
+        catalogNumber: 'MOVLP019',
+        barcode: '0886976389413',
+        formatText: '2×Vinyl',
+        discCount: 2,
+        year: 2010,
+      }),
+    ]);
+  });
+
+  it('reads sides, the original year and who played what from a MusicBrainz release', () => {
+    const record = mapMusicBrainzDetails(musicBrainzRelease);
+    expect(record).toMatchObject({ releaseYear: 1959, genres: ['Jazz', 'Modal jazz'] });
+    expect(record.tracks[0]).toEqual({ position: 'A1', title: 'So What', duration: 545 });
+    expect(record.tracks.map((t) => t.position)).toEqual(['A1', 'A2', 'A3', 'B1', 'B2']);
+    expect(record.credits).toContainEqual({
+      name: 'John Coltrane',
+      role: 'musician',
+      detail: 'tenor saxophone',
+    });
+    expect(record.credits).toContainEqual({ name: 'Irving Townsend', role: 'producer' });
+    expect(record.credits).toContainEqual({
+      name: 'Fred Plaut',
+      role: 'engineer',
+      detail: 'recording',
+    });
+    // A musician on every track is credited once.
+    expect(record.credits.filter((c) => c.name === 'Paul Chambers')).toHaveLength(1);
+  });
+
+  it('maps Discogs search results and splits their titles', () => {
+    expect(mapDiscogsSearch(discogsSearch)[0]).toMatchObject({
+      provider: 'discogs',
+      externalId: '2772432',
+      title: 'Kind Of Blue',
+      artists: ['Miles Davis'],
+      catalogNumber: 'CS 8163',
+      country: 'France',
+      year: 2010,
+      vinyl: true,
+      format: 'lp',
+      channels: 'stereo',
+      genres: ['Jazz', 'Modal'],
+    });
+  });
+
+  it('reads tracks, credits, variant and matrix from a Discogs release', () => {
+    const record = mapDiscogsRelease(discogsRelease, 1959);
+    expect(record).toMatchObject({
+      releaseYear: 1959,
+      year: 2010,
+      variant: '180 gram',
+      matrix: 'XSM 47326',
+    });
+    expect(record.coverUrl).toMatch(/^https:\/\/i\.discogs\.com\//);
+    expect(record.tracks[1]).toEqual({
+      position: 'A2',
+      title: 'Freddie Freeloader',
+      duration: 572,
+    });
+    // Disambiguation numbers go, songwriting credits are left out.
+    expect(record.credits).toContainEqual({
+      name: 'Paul Chambers',
+      role: 'musician',
+      detail: 'bass',
+    });
+    expect(record.credits.some((c) => c.name === 'Miles Davis' && c.role === 'other')).toBe(false);
+    expect(record.credits.filter((c) => c.name === 'Miles Davis').map((c) => c.detail)).toEqual([
+      'trumpet',
+    ]);
+  });
+
+  it('reads the carrier and credit roles in the words catalogues use', () => {
+    expect(carrierFrom(['Vinyl', '7"', 'Single', '45 RPM', 'Mono'])).toEqual({
+      vinyl: true,
+      format: 'single',
+      size: '7',
+      speed: '45',
+      channels: 'mono',
+    });
+    expect(carrierFrom(['Shellac', '10"', '78 RPM'])).toMatchObject({
+      format: 'shellac',
+      speed: '78',
+    });
+    expect(carrierFrom(['CD'])).toMatchObject({ vinyl: false, format: 'cd' });
+    expect(creditRoleFrom('Design [Cover]')).toEqual({ role: 'design', detail: 'Cover' });
+    expect(creditRoleFrom('Photography By')).toEqual({ role: 'photography' });
+    expect(creditRoleFrom('design/illustration')).toMatchObject({ role: 'design' });
+    expect(creditRoleFrom('Artwork By')).toMatchObject({ role: 'artwork' });
+    expect(creditRoleFrom('Lacquer Cut By')).toMatchObject({ role: 'engineer' });
+    expect(creditRoleFrom('Written-By')).toBeUndefined();
+    expect(creditRoleFrom('instrument', ['additional', 'piano'])).toEqual({
+      role: 'musician',
+      detail: 'piano',
+    });
+  });
+
+  it('sends the Discogs token as a parameter and only offers Discogs with one', async () => {
+    expect(availableRecordProviders().map((p) => p.id)).toEqual(['musicbrainz']);
+    expect(availableRecordProviders({ discogs: 'abc' }).map((p) => p.id)).toEqual([
+      'musicbrainz',
+      'discogs',
+    ]);
+    const fetch = vi.fn(async () => json(discogsSearch));
+    await discogsProvider.byBarcode('036000291452', {
+      locale: 'de',
+      keys: { discogs: 'abc' },
+      fetch,
+    });
+    const url = new URL(String((fetch.mock.calls[0] as unknown[])[0]));
+    expect(url.searchParams.get('barcode')).toBe('036000291452');
+    expect(url.searchParams.get('token')).toBe('abc');
+  });
+
+  it('looks a barcode up in both spellings and keeps going when one catalogue fails', async () => {
+    const fetch = vi.fn(async (input: RequestInfo | URL) =>
+      String(input).includes('musicbrainz')
+        ? json(musicBrainzBarcode)
+        : json({ message: 'down' }, 500),
+    );
+    const results = await lookupRecordBarcode('886976389413', {
+      locale: 'de',
+      keys: { discogs: 'abc' },
+      fetch,
+    });
+    expect(results.map((r) => r.catalogNumber)).toEqual(['MOVLP019']);
+    const mbUrl = new URL(String((fetch.mock.calls[0] as unknown[])[0]));
+    expect(mbUrl.searchParams.get('query')).toBe('barcode:886976389413 OR barcode:0886976389413');
+    expect(musicBrainzProvider.storableCovers).toBeUndefined();
+    expect(discogsProvider.storableCovers).toBe(false);
   });
 });

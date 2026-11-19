@@ -1,0 +1,406 @@
+{
+ "created": "2026-11-19T11:59:52.119Z",
+ "count": 537181,
+ "offset": 0,
+ "releases": [
+  {
+   "id": "fa731de1-331d-4713-adcc-2c304817cb88",
+   "score": 100,
+   "count": 3,
+   "title": "Kind of Blue",
+   "status": "Official",
+   "packaging": "Jewel Case",
+   "artist-credit": [
+    {
+     "name": "Miles Davis",
+     "artist": {
+      "id": "561d854a-6a28-4aa7-8c99-323e6ce46c2a",
+      "name": "Miles Davis",
+      "sort-name": "Davis, Miles",
+      "disambiguation": "jazz trumpeter, bandleader, songwriter"
+     }
+    }
+   ],
+   "release-group": {
+    "id": "8e8a594f-2175-38c7-a871-abb68ec363e7",
+    "type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc",
+    "primary-type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc",
+    "title": "Kind of Blue",
+    "primary-type": "Album"
+   },
+   "date": "2007-10-24",
+   "country": "JP",
+   "release-events": [
+    {
+     "date": "2007-10-24",
+     "area": {
+      "id": "2db42837-c832-3c27-b4a3-08198f75693c",
+      "name": "Japan",
+      "sort-name": "Japan",
+      "iso-3166-1-codes": [
+       "JP"
+      ]
+     }
+    }
+   ],
+   "barcode": "4547366033267",
+   "label-info": [
+    {
+     "catalog-number": "SICP-10083",
+     "label": {
+      "id": "c9a4ea86-7611-4fff-9f4f-41f18be7e14b",
+      "name": "Sony Records International"
+     }
+    }
+   ],
+   "track-count": 15,
+   "media": [
+    {
+     "id": "e39ba767-269c-3688-839f-3c7d746dac61",
+     "format": "Hybrid SACD (CD layer)",
+     "disc-count": 1,
+     "track-count": 5
+    },
+    {
+     "id": "9c170e3e-077a-3d54-b468-5adaa871f2fc",
+     "format": "Hybrid SACD (SACD layer, 2 channels)",
+     "disc-count": 0,
+     "track-count": 5
+    },
+    {
+     "id": "ef8686e5-937e-3212-a9fe-90b63cbee926",
+     "format": "Hybrid SACD (SACD layer, multichannel)",
+     "disc-count": 0,
+     "track-count": 5
+    }
+   ]
+  },
+  {
+   "id": "bee5e0cd-1767-4a8e-9578-6455e87ba60b",
+   "score": 100,
+   "count": 1,
+   "title": "Kind of Blue",
+   "status": "Official",
+   "disambiguation": "stereo",
+   "artist-credit": [
+    {
+     "name": "Miles Davis",
+     "artist": {
+      "id": "561d854a-6a28-4aa7-8c99-323e6ce46c2a",
+      "name": "Miles Davis",
+      "sort-name": "Davis, Miles",
+      "disambiguation": "jazz trumpeter, bandleader, songwriter"
+     }
+    }
+   ],
+   "release-group": {
+    "id": "8e8a594f-2175-38c7-a871-abb68ec363e7",
+    "type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc",
+    "primary-type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc",
+    "title": "Kind of Blue",
+    "primary-type": "Album"
+   },
+   "date": "1959-08-17",
+   "country": "US",
+   "release-events": [
+    {
+     "date": "1959-08-17",
+     "area": {
+      "id": "489ce91b-6658-3307-9877-795b68554c98",
+      "name": "United States",
+      "sort-name": "United States",
+      "iso-3166-1-codes": [
+       "US"
+      ]
+     }
+    }
+   ],
+   "barcode": "",
+   "label-info": [
+    {
+     "catalog-number": "CS 8163",
+     "label": {
+      "id": "011d1192-6f65-45bd-85c4-0400dd45693e",
+      "name": "Columbia"
+     }
+    }
+   ],
+   "track-count": 5,
+   "media": [
+    {
+     "id": "39677cb2-67e8-3344-acdf-6cc91f71b4bd",
+     "format": "12\" Vinyl",
+     "disc-count": 0,
+     "track-count": 5
+    }
+   ]
+  },
+  {
+   "id": "e32a3f0b-1c19-3170-bb1c-650893774744",
+   "score": 95,
+   "count": 1,
+   "title": "Kind of Blue",
+   "status": "Official",
+   "packaging": "Jewel Case",
+   "artist-credit": [
+    {
+     "name": "Miles Davis",
+     "artist": {
+      "id": "561d854a-6a28-4aa7-8c99-323e6ce46c2a",
+      "name": "Miles Davis",
+      "sort-name": "Davis, Miles",
+      "disambiguation": "jazz trumpeter, bandleader, songwriter"
+     }
+    }
+   ],
+   "release-group": {
+    "id": "8e8a594f-2175-38c7-a871-abb68ec363e7",
+    "type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc",
+    "primary-type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc",
+    "title": "Kind of Blue",
+    "primary-type": "Album"
+   },
+   "date": "1987",
+   "country": "US",
+   "release-events": [
+    {
+     "date": "1987",
+     "area": {
+      "id": "489ce91b-6658-3307-9877-795b68554c98",
+      "name": "United States",
+      "sort-name": "United States",
+      "iso-3166-1-codes": [
+       "US"
+      ]
+     }
+    }
+   ],
+   "barcode": "074644057928",
+   "label-info": [
+    {
+     "catalog-number": "CK 40579",
+     "label": {
+      "id": "011d1192-6f65-45bd-85c4-0400dd45693e",
+      "name": "Columbia"
+     }
+    }
+   ],
+   "track-count": 5,
+   "media": [
+    {
+     "id": "5890273c-a9a5-3ce3-a776-02ac4283bbfe",
+     "format": "CD",
+     "disc-count": 5,
+     "track-count": 5
+    }
+   ]
+  },
+  {
+   "id": "e8324f18-31cd-4a2f-877b-08affdccfff1",
+   "score": 95,
+   "count": 2,
+   "title": "Kind of Blue",
+   "status": "Official",
+   "packaging": "Jewel Case",
+   "artist-credit": [
+    {
+     "name": "Miles Davis",
+     "artist": {
+      "id": "561d854a-6a28-4aa7-8c99-323e6ce46c2a",
+      "name": "Miles Davis",
+      "sort-name": "Davis, Miles",
+      "disambiguation": "jazz trumpeter, bandleader, songwriter"
+     }
+    }
+   ],
+   "release-group": {
+    "id": "8e8a594f-2175-38c7-a871-abb68ec363e7",
+    "type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc",
+    "primary-type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc",
+    "title": "Kind of Blue",
+    "primary-type": "Album"
+   },
+   "date": "2004",
+   "country": "US",
+   "release-events": [
+    {
+     "date": "2004",
+     "area": {
+      "id": "489ce91b-6658-3307-9877-795b68554c98",
+      "name": "United States",
+      "sort-name": "United States",
+      "iso-3166-1-codes": [
+       "US"
+      ]
+     }
+    }
+   ],
+   "barcode": "827969088722",
+   "label-info": [
+    {
+     "catalog-number": "CN 90887",
+     "label": {
+      "id": "011d1192-6f65-45bd-85c4-0400dd45693e",
+      "name": "Columbia"
+     }
+    }
+   ],
+   "track-count": 19,
+   "media": [
+    {
+     "id": "78c91fb8-1b1c-3036-ace5-7b108bdcffd1",
+     "format": "DualDisc",
+     "disc-count": 1,
+     "track-count": 6
+    },
+    {
+     "id": "788bc620-c574-3ec0-a05d-447d502dbfb1",
+     "format": "DualDisc",
+     "disc-count": 0,
+     "track-count": 13
+    }
+   ]
+  },
+  {
+   "id": "a9bd6e04-c2b6-4d70-8043-eb3c115d2d57",
+   "score": 95,
+   "count": 1,
+   "title": "Kind of Blue",
+   "status": "Official",
+   "packaging": "Jewel Case",
+   "artist-credit": [
+    {
+     "name": "Miles Davis",
+     "artist": {
+      "id": "561d854a-6a28-4aa7-8c99-323e6ce46c2a",
+      "name": "Miles Davis",
+      "sort-name": "Davis, Miles",
+      "disambiguation": "jazz trumpeter, bandleader, songwriter"
+     }
+    }
+   ],
+   "release-group": {
+    "id": "8e8a594f-2175-38c7-a871-abb68ec363e7",
+    "type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc",
+    "primary-type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc",
+    "title": "Kind of Blue",
+    "primary-type": "Album"
+   },
+   "date": "1997",
+   "country": "CA",
+   "release-events": [
+    {
+     "date": "1997",
+     "area": {
+      "id": "71bbafaa-e825-3e15-8ca9-017dcad1748b",
+      "name": "Canada",
+      "sort-name": "Canada",
+      "iso-3166-1-codes": [
+       "CA"
+      ]
+     }
+    }
+   ],
+   "barcode": "77749942862102",
+   "label-info": [
+    {
+     "catalog-number": "CK 64935",
+     "label": {
+      "id": "45ffe1d8-92da-4750-9a4a-f42861f46e2c",
+      "name": "Legacy"
+     }
+    },
+    {
+     "catalog-number": "CK 64935",
+     "label": {
+      "id": "011d1192-6f65-45bd-85c4-0400dd45693e",
+      "name": "Columbia"
+     }
+    }
+   ],
+   "track-count": 6,
+   "media": [
+    {
+     "id": "763b683a-dafc-3694-9b1a-6a8dbdfa7a70",
+     "format": "CD",
+     "disc-count": 1,
+     "track-count": 6
+    }
+   ]
+  },
+  {
+   "id": "353021d1-3d84-4f17-9fe4-66788d785a9d",
+   "score": 95,
+   "count": 2,
+   "title": "Kind of Blue",
+   "status": "Official",
+   "disambiguation": "legacy edition",
+   "packaging": "Gatefold Cover",
+   "artist-credit": [
+    {
+     "name": "Miles Davis",
+     "artist": {
+      "id": "561d854a-6a28-4aa7-8c99-323e6ce46c2a",
+      "name": "Miles Davis",
+      "sort-name": "Davis, Miles",
+      "disambiguation": "jazz trumpeter, bandleader, songwriter"
+     }
+    }
+   ],
+   "release-group": {
+    "id": "8e8a594f-2175-38c7-a871-abb68ec363e7",
+    "type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc",
+    "primary-type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc",
+    "title": "Kind of Blue",
+    "primary-type": "Album"
+   },
+   "date": "2016",
+   "country": "XE",
+   "release-events": [
+    {
+     "date": "2016",
+     "area": {
+      "id": "89a675c2-3e37-3518-b83c-418bad59a85a",
+      "name": "Europe",
+      "sort-name": "Europe",
+      "iso-3166-1-codes": [
+       "XE"
+      ]
+     }
+    }
+   ],
+   "barcode": "889853635726",
+   "label-info": [
+    {
+     "catalog-number": "88985363572",
+     "label": {
+      "id": "45ffe1d8-92da-4750-9a4a-f42861f46e2c",
+      "name": "Legacy"
+     }
+    },
+    {
+     "catalog-number": "88985363572",
+     "label": {
+      "id": "011d1192-6f65-45bd-85c4-0400dd45693e",
+      "name": "Columbia"
+     }
+    }
+   ],
+   "track-count": 21,
+   "media": [
+    {
+     "id": "3dc2aa1b-6bc2-30db-a201-93d7aff9447a",
+     "format": "CD",
+     "disc-count": 1,
+     "track-count": 15
+    },
+    {
+     "id": "4a3f28ce-9b28-396c-a4df-cc4f490d2fa7",
+     "format": "CD",
+     "disc-count": 1,
+     "track-count": 6
+    }
+   ]
+  }
+ ]
+}

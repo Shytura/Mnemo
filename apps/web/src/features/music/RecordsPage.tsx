@@ -27,6 +27,7 @@ import {
   LayoutGridIcon,
   ListIcon,
   PlusIcon,
+  ScanBarcodeIcon,
   SearchIcon,
   SlidersHorizontalIcon,
 } from 'lucide-react';
@@ -98,7 +99,8 @@ export function RecordsPage() {
       search.decade ||
       search.tag,
   );
-  const add = () => dialogs.open({ type: 'record' });
+  const add = () => dialogs.open({ type: 'addRecord' });
+  const scan = () => dialogs.open({ type: 'addRecord', scan: true });
 
   if (records && records.length === 0) {
     return (
@@ -112,9 +114,17 @@ export function RecordsPage() {
           title={t('records.emptyTitle')}
           description={t('records.emptyText')}
           action={
-            <Button onClick={add}>
-              <PlusIcon /> {t('records.addFirst')}
-            </Button>
+            <div className="flex flex-wrap justify-center gap-3">
+              <Button onClick={add}>
+                <PlusIcon /> {t('records.addFirst')}
+              </Button>
+              <Button variant="outline" onClick={scan}>
+                <ScanBarcodeIcon /> {t('record.scan.button')}
+              </Button>
+              <Button variant="ghost" onClick={() => dialogs.open({ type: 'record' })}>
+                {t('record.add.manual')}
+              </Button>
+            </div>
           }
         />
       </>
@@ -136,6 +146,15 @@ export function RecordsPage() {
                 </Link>
               </Button>
             )}
+            <Button
+              variant="outline"
+              size="icon"
+              aria-label={t('record.scan.button')}
+              title={t('record.scan.button')}
+              onClick={scan}
+            >
+              <ScanBarcodeIcon />
+            </Button>
             <Button onClick={add}>
               <PlusIcon /> {t('records.add')}
             </Button>

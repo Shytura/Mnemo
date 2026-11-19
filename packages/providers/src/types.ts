@@ -1,4 +1,12 @@
-import type { Coords, VenueKind } from '@mnemo/core';
+import type {
+  Coords,
+  Credit,
+  RecordFormat,
+  RecordSize,
+  RecordSpeed,
+  Track,
+  VenueKind,
+} from '@mnemo/core';
 
 export type ProviderLocale = 'de' | 'en';
 
@@ -152,4 +160,58 @@ export interface WikiSummary {
   extract: string;
   imageUrl?: string;
   url: string;
+}
+
+// ── Records ────────────────────────────────────────────────────────────────
+
+export interface RecordSearchResult {
+  provider: string;
+  externalId: string;
+  title: string;
+  /** Display names as credited, e.g. `Miles Davis`. */
+  artists: string[];
+  label?: string;
+  catalogNumber?: string;
+  /** EAN-13 or UPC-A digits. */
+  barcode?: string;
+  /** Year of this release, which may be a reissue. */
+  year?: number;
+  /** As the catalogue gives it, e.g. `US` or `Germany`. */
+  country?: string;
+  /** The carrier in the catalogue's words, e.g. `2×12" Vinyl` or `LP, Album, Reissue`. */
+  formatText?: string;
+  format?: RecordFormat;
+  size?: RecordSize;
+  speed?: RecordSpeed;
+  discCount?: number;
+  channels?: 'mono' | 'stereo';
+  /** Vinyl or shellac; catalogues list CDs and downloads of the same album as well. */
+  vinyl: boolean;
+  genres?: string[];
+  coverUrl?: string;
+  thumbUrl?: string;
+  url?: string;
+}
+
+/** Everything a catalogue knows about one release, fetched once the user picked it. */
+export interface RecordDetails extends RecordSearchResult {
+  /** Year of the original release. */
+  releaseYear?: number;
+  tracks: Track[];
+  credits: Credit[];
+  /** E.g. `180 gram, red translucent`. */
+  variant?: string;
+  matrix?: string;
+}
+
+export interface RecordSearchProvider {
+  id: string;
+  name: string;
+  homepage: string;
+  requiresKey?: ProviderKeySpec;
+  /** False when covers can be shown but not stored offline (no CORS on the image host). */
+  storableCovers?: boolean;
+  search(query: string, ctx: ProviderContext): Promise<RecordSearchResult[]>;
+  byBarcode(code: string, ctx: ProviderContext): Promise<RecordSearchResult[]>;
+  details(externalId: string, ctx: ProviderContext): Promise<RecordDetails>;
 }

@@ -316,7 +316,7 @@ test('a record goes on the wall with its sides, its designer and where it was bo
   page,
 }) => {
   await page.goto('/records');
-  await page.getByRole('button', { name: 'Erste Platte hinzufügen' }).click();
+  await page.getByRole('button', { name: 'Von Hand eintragen' }).click();
   const form = page.getByRole('dialog');
   await form.getByLabel('Titel', { exact: true }).fill('Blue Hour');
   await form.getByLabel('Künstler:innen').fill('Ada Mercer Quartet');
@@ -355,4 +355,40 @@ test('a record goes on the wall with its sides, its designer and where it was bo
   await page.goto('/records?q=lamplight&view=shelf');
   await expect(page.getByText('1 Platte', { exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Ada Mercer Quartet – Blue Hour' })).toBeVisible();
+});
+
+test('a barcode finds the pressing, and its sides and players come along', async ({ page }) => {
+  const fixture = (name: string) =>
+    readFile(new URL(`../../../packages/providers/test/fixtures/${name}`, import.meta.url), 'utf8');
+  const [barcode, release] = await Promise.all([
+    fixture('musicbrainz-barcode.json'),
+    fixture('musicbrainz-release.json'),
+  ]);
+  await page.route('https://musicbrainz.org/ws/2/release/?**', (route) =>
+    route.fulfill({ body: barcode, contentType: 'application/json' }),
+  );
+  await page.route('https://musicbrainz.org/ws/2/release/*-*?**', (route) =>
+    route.fulfill({ body: release, contentType: 'application/json' }),
+  );
+
+  await page.goto('/records');
+  await page.getByRole('button', { name: 'Erste Platte hinzufügen' }).click();
+  const add = page.getByRole('dialog');
+  await add.getByLabel('Künstler:in, Titel, Katalognummer oder Barcode').fill('0886976389413');
+  await expect(add.getByText('Gefunden über den Barcode')).toBeVisible();
+  await expect(add.getByText('MOVLP019')).toBeVisible();
+  await add.getByRole('button', { name: 'Übernehmen' }).click();
+
+  const form = page.getByRole('dialog');
+  await expect(form.getByText('Aus dem Katalog')).toBeVisible();
+  await expect(form.getByLabel('Titel', { exact: true })).toHaveValue('Kind of Blue');
+  await expect(form.getByText('5 Stücke erkannt')).toBeVisible();
+  await form.getByRole('button', { name: 'Speichern' }).click();
+  await expect(form).toBeHidden();
+
+  await page.getByRole('link', { name: /Kind of Blue/ }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Kind of Blue' })).toBeVisible();
+  await expect(page.getByText('Flamenco Sketches')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'John Coltrane' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'MusicBrainz' })).toBeVisible();
 });

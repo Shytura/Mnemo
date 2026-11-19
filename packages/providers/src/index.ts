@@ -6,6 +6,8 @@ import { wikidataProvider } from './art/wikidata';
 import { dnbProvider } from './books/dnb';
 import { googleBooksProvider } from './books/googlebooks';
 import { openLibraryProvider } from './books/openlibrary';
+import { discogsProvider } from './music/discogs';
+import { musicBrainzProvider } from './music/musicbrainz';
 import type {
   ArtworkSearchProvider,
   BookSearchProvider,
@@ -13,6 +15,8 @@ import type {
   ProviderContext,
   ProviderKeySpec,
   ProviderKeys,
+  RecordSearchProvider,
+  RecordSearchResult,
 } from './types';
 
 export { aicProvider, mapAic } from './art/aic';
@@ -30,6 +34,14 @@ export {
   openLibraryProvider,
 } from './books/openlibrary';
 export { fetchJson, fetchText, ProviderError } from './http';
+export { carrierFrom, creditRoleFrom, mergeCredits } from './music/common';
+export { discogsProvider, mapDiscogsRelease, mapDiscogsSearch } from './music/discogs';
+export {
+  mapMusicBrainzDetails,
+  mapMusicBrainzRelease,
+  mapMusicBrainzSearch,
+  musicBrainzProvider,
+} from './music/musicbrainz';
 export { mapWikidataPerson, wikidataPeopleProvider, wikidataYear } from './people/wikidata';
 export { venueKindFromOsm, venueKindFromTags } from './places/osm';
 export {
@@ -65,6 +77,15 @@ export const bookProviders: readonly BookSearchProvider[] = [
   googleBooksProvider,
 ];
 
+/**
+ * All record catalogues, in display order. To add one, implement `RecordSearchProvider` in
+ * `src/music/` and append it here.
+ */
+export const recordProviders: readonly RecordSearchProvider[] = [
+  musicBrainzProvider,
+  discogsProvider,
+];
+
 const usable =
   (keys: ProviderKeys) =>
   (p: { requiresKey?: ProviderKeySpec }): boolean =>
@@ -78,12 +99,16 @@ export function availableBookProviders(keys: ProviderKeys = {}): BookSearchProvi
   return bookProviders.filter(usable(keys));
 }
 
+export function availableRecordProviders(keys: ProviderKeys = {}): RecordSearchProvider[] {
+  return recordProviders.filter(usable(keys));
+}
+
 /** Providers of every kind that need a key from the user; the settings list one field each. */
 export function providersNeedingKeys(): Array<{
   name: string;
   requiresKey: ProviderKeySpec;
 }> {
-  return [...artProviders, ...bookProviders].flatMap((p) =>
+  return [...artProviders, ...bookProviders, ...recordProviders].flatMap((p) =>
     p.requiresKey ? [{ name: p.name, requiresKey: p.requiresKey }] : [],
   );
 }
@@ -131,4 +156,22 @@ export async function lookupIsbn(
     throw (settled[0] as PromiseRejectedResult | undefined)?.reason ?? new Error('No catalogue');
   }
   return mergeBookResults(found);
+}
+
+/**
+ * Looks a barcode up in every usable record catalogue at once. One barcode can name several
+ * pressings (a reissue keeps the code of its first run), so all matches come back, vinyl first.
+ */
+export async function lookupRecordBarcode(
+  code: string,
+  ctx: ProviderContext,
+): Promise<RecordSearchResult[]> {
+  const providers = availableRecordProviders(ctx.keys);
+  const settled = await Promise.allSettled(providers.map((p) => p.byBarcode(code, ctx)));
+  if (ctx.signal?.aborted) throw ctx.signal.reason;
+  if (settled.every((s) => s.status === 'rejected')) {
+    throw (settled[0] as PromiseRejectedResult | undefined)?.reason ?? new Error('No catalogue');
+  }
+  const found = settled.flatMap((s) => (s.status === 'fulfilled' ? s.value : []));
+  return [...found.filter((r) => r.vinyl), ...found.filter((r) => !r.vinyl)];
 }

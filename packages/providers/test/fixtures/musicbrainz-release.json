@@ -1,0 +1,676 @@
+{
+ "packaging": null,
+ "release-group": {
+  "disambiguation": "",
+  "secondary-types": [],
+  "first-release-date": "1959-08-17",
+  "secondary-type-ids": [],
+  "title": "Kind of Blue",
+  "primary-type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc",
+  "genres": [
+   {
+    "id": "5fc86669-d9ba-4716-8090-eff39081090e",
+    "count": 7,
+    "disambiguation": "",
+    "name": "cool jazz"
+   },
+   {
+    "name": "hard bop",
+    "disambiguation": "",
+    "id": "8c083468-2dce-4a31-ae77-433af3deafd3",
+    "count": 3
+   },
+   {
+    "name": "jazz",
+    "disambiguation": "",
+    "count": 28,
+    "id": "a715278f-1580-409f-8078-4ffbc800e08b"
+   },
+   {
+    "count": 4,
+    "id": "ff60b411-27db-4bd3-a444-3afe92cbfa7e",
+    "name": "modal jazz",
+    "disambiguation": ""
+   },
+   {
+    "name": "post-bop",
+    "disambiguation": "",
+    "count": 2,
+    "id": "94ce0ba0-9043-4b5b-87d6-3c1a8458f75d"
+   }
+  ],
+  "primary-type": "Album",
+  "id": "8e8a594f-2175-38c7-a871-abb68ec363e7",
+  "artist-credit": [
+   {
+    "artist": {
+     "country": "US",
+     "id": "561d854a-6a28-4aa7-8c99-323e6ce46c2a",
+     "name": "Miles Davis",
+     "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df",
+     "sort-name": "Davis, Miles",
+     "disambiguation": "jazz trumpeter, bandleader, songwriter",
+     "type": "Person"
+    },
+    "joinphrase": "",
+    "name": "Miles Davis"
+   }
+  ]
+ },
+ "country": "US",
+ "status": "Official",
+ "artist-credit": [
+  {
+   "name": "Miles Davis",
+   "joinphrase": "",
+   "artist": {
+    "id": "561d854a-6a28-4aa7-8c99-323e6ce46c2a",
+    "country": "US",
+    "genres": [
+     {
+      "name": "bebop",
+      "disambiguation": "",
+      "id": "ac30756b-55a7-4dc3-8908-8f94c93318d0",
+      "count": 3
+     },
+     {
+      "count": 1,
+      "id": "fe12b346-a10e-450f-bf81-fa20894b5ea2",
+      "disambiguation": "",
+      "name": "blues"
+     },
+     {
+      "disambiguation": "",
+      "name": "classical",
+      "id": "6ed4e4d1-9a97-4e2c-b8df-083754f154f4",
+      "count": 1
+     },
+     {
+      "disambiguation": "",
+      "name": "cool jazz",
+      "id": "5fc86669-d9ba-4716-8090-eff39081090e",
+      "count": 10
+     },
+     {
+      "id": "fe4ba6a1-9873-4fd0-a12b-a70c81818514",
+      "count": 1,
+      "name": "funk",
+      "disambiguation": ""
+     },
+     {
+      "id": "8c083468-2dce-4a31-ae77-433af3deafd3",
+      "count": 7,
+      "disambiguation": "",
+      "name": "hard bop"
+     },
+     {
+      "disambiguation": "",
+      "name": "jazz",
+      "count": 27,
+      "id": "a715278f-1580-409f-8078-4ffbc800e08b"
+     },
+     {
+      "count": 13,
+      "id": "2377ff19-83e7-4873-b425-dce6d1ad4ef4",
+      "disambiguation": "",
+      "name": "jazz fusion"
+     },
+     {
+      "count": 1,
+      "id": "f3c43ae8-839a-4523-b295-cfa4eba6c911",
+      "name": "jazz-funk",
+      "disambiguation": ""
+     },
+     {
+      "count": 11,
+      "id": "ff60b411-27db-4bd3-a444-3afe92cbfa7e",
+      "name": "modal jazz",
+      "disambiguation": ""
+     },
+     {
+      "id": "94ce0ba0-9043-4b5b-87d6-3c1a8458f75d",
+      "count": 4,
+      "disambiguation": "",
+      "name": "post-bop"
+     },
+     {
+      "disambiguation": "",
+      "name": "rock",
+      "count": 1,
+      "id": "0e3fc579-2d24-4f20-9dae-736e1ec78798"
+     }
+    ],
+    "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df",
+    "name": "Miles Davis",
+    "sort-name": "Davis, Miles",
+    "disambiguation": "jazz trumpeter, bandleader, songwriter",
+    "type": "Person"
+   }
+  }
+ ],
+ "barcode": "",
+ "disambiguation": "stereo",
+ "media": [
+  {
+   "track-offset": 0,
+   "track-count": 5,
+   "position": 1,
+   "format": "12\" Vinyl",
+   "tracks": [
+    {
+     "length": 545426,
+     "position": 1,
+     "number": "A1",
+     "title": "So What",
+     "recording": {
+      "id": "60f750f4-d222-46b7-ad5c-905334c9a48a",
+      "title": "So What",
+      "relations": [
+       {
+        "type": "instrument",
+        "attributes": [
+         "alto saxophone"
+        ],
+        "artist": {
+         "id": "a4c73ebe-b2c7-4f13-b99d-2fe1f9f27da8",
+         "name": "Cannonball Adderley"
+        }
+       },
+       {
+        "type": "instrument",
+        "attributes": [
+         "double bass"
+        ],
+        "artist": {
+         "id": "b6ff4fd0-03ae-41a6-942e-7de13124b970",
+         "name": "Paul Chambers"
+        }
+       },
+       {
+        "type": "instrument",
+        "attributes": [
+         "drums (drum set)"
+        ],
+        "artist": {
+         "id": "d0cbf65a-541b-476a-996c-fe2cd264bbd0",
+         "name": "Jimmy Cobb"
+        }
+       },
+       {
+        "type": "instrument",
+        "attributes": [
+         "tenor saxophone"
+        ],
+        "artist": {
+         "id": "b625448e-bf4a-41c3-a421-72ad46cdb831",
+         "name": "John Coltrane"
+        }
+       },
+       {
+        "type": "instrument",
+        "attributes": [
+         "trumpet"
+        ],
+        "artist": {
+         "id": "561d854a-6a28-4aa7-8c99-323e6ce46c2a",
+         "name": "Miles Davis"
+        }
+       },
+       {
+        "type": "instrument",
+        "attributes": [
+         "piano"
+        ],
+        "artist": {
+         "id": "8247a3f2-3a8e-4256-b322-6c57b03a4e36",
+         "name": "Bill Evans"
+        }
+       }
+      ]
+     },
+     "id": "42861e8d-c381-347a-a7c7-8a061482e226"
+    },
+    {
+     "number": "A2",
+     "position": 2,
+     "length": 575800,
+     "id": "3d852cfd-21a8-32bb-9ba0-314ed536c702",
+     "recording": {
+      "id": "852bf62a-29f9-4026-abc5-86d6e973196f",
+      "title": "Freddie Freeloader",
+      "relations": [
+       {
+        "type": "instrument",
+        "attributes": [
+         "alto saxophone"
+        ],
+        "artist": {
+         "id": "a4c73ebe-b2c7-4f13-b99d-2fe1f9f27da8",
+         "name": "Cannonball Adderley"
+        }
+       },
+       {
+        "type": "instrument",
+        "attributes": [
+         "double bass"
+        ],
+        "artist": {
+         "id": "b6ff4fd0-03ae-41a6-942e-7de13124b970",
+         "name": "Paul Chambers"
+        }
+       },
+       {
+        "type": "instrument",
+        "attributes": [
+         "drums (drum set)"
+        ],
+        "artist": {
+         "id": "d0cbf65a-541b-476a-996c-fe2cd264bbd0",
+         "name": "Jimmy Cobb"
+        }
+       },
+       {
+        "type": "instrument",
+        "attributes": [
+         "tenor saxophone"
+        ],
+        "artist": {
+         "id": "b625448e-bf4a-41c3-a421-72ad46cdb831",
+         "name": "John Coltrane"
+        }
+       },
+       {
+        "type": "instrument",
+        "attributes": [
+         "trumpet"
+        ],
+        "artist": {
+         "id": "561d854a-6a28-4aa7-8c99-323e6ce46c2a",
+         "name": "Miles Davis"
+        }
+       },
+       {
+        "type": "instrument",
+        "attributes": [
+         "piano"
+        ],
+        "artist": {
+         "id": "d3f9352c-18e2-47a0-802c-13d821490e42",
+         "name": "Wynton Kelly"
+        }
+       }
+      ]
+     },
+     "title": "Freddie Freeloader"
+    },
+    {
+     "number": "A3",
+     "position": 3,
+     "length": 328666,
+     "title": "Blue in Green",
+     "id": "16b52074-3218-3330-badb-138ee966075d",
+     "recording": {
+      "id": "67a9794c-153a-4a24-82ec-9eace7e208f2",
+      "title": "Blue in Green",
+      "relations": [
+       {
+        "type": "instrument",
+        "attributes": [
+         "double bass"
+        ],
+        "artist": {
+         "id": "b6ff4fd0-03ae-41a6-942e-7de13124b970",
+         "name": "Paul Chambers"
+        }
+       },
+       {
+        "type": "instrument",
+        "attributes": [
+         "drums (drum set)"
+        ],
+        "artist": {
+         "id": "d0cbf65a-541b-476a-996c-fe2cd264bbd0",
+         "name": "Jimmy Cobb"
+        }
+       },
+       {
+        "type": "instrument",
+        "attributes": [
+         "tenor saxophone"
+        ],
+        "artist": {
+         "id": "b625448e-bf4a-41c3-a421-72ad46cdb831",
+         "name": "John Coltrane"
+        }
+       },
+       {
+        "type": "instrument",
+        "attributes": [
+         "trumpet"
+        ],
+        "artist": {
+         "id": "561d854a-6a28-4aa7-8c99-323e6ce46c2a",
+         "name": "Miles Davis"
+        }
+       },
+       {
+        "type": "instrument",
+        "attributes": [
+         "piano"
+        ],
+        "artist": {
+         "id": "8247a3f2-3a8e-4256-b322-6c57b03a4e36",
+         "name": "Bill Evans"
+        }
+       }
+      ]
+     }
+    },
+    {
+     "length": 693800,
+     "number": "B1",
+     "position": 4,
+     "recording": {
+      "id": "b7ebe185-21e9-4400-a17a-3d0cee232925",
+      "title": "All Blues",
+      "relations": [
+       {
+        "type": "engineer",
+        "attributes": [],
+        "artist": {
+         "id": "febc30e8-5033-4c65-b25c-084c872be8e5",
+         "name": "Fred Plaut"
+        }
+       },
+       {
+        "type": "instrument",
+        "attributes": [
+         "alto saxophone"
+        ],
+        "artist": {
+         "id": "a4c73ebe-b2c7-4f13-b99d-2fe1f9f27da8",
+         "name": "Cannonball Adderley"
+        }
+       },
+       {
+        "type": "instrument",
+        "attributes": [
+         "double bass"
+        ],
+        "artist": {
+         "id": "b6ff4fd0-03ae-41a6-942e-7de13124b970",
+         "name": "Paul Chambers"
+        }
+       },
+       {
+        "type": "instrument",
+        "attributes": [
+         "drums (drum set)"
+        ],
+        "artist": {
+         "id": "d0cbf65a-541b-476a-996c-fe2cd264bbd0",
+         "name": "Jimmy Cobb"
+        }
+       },
+       {
+        "type": "instrument",
+        "attributes": [
+         "tenor saxophone"
+        ],
+        "artist": {
+         "id": "b625448e-bf4a-41c3-a421-72ad46cdb831",
+         "name": "John Coltrane"
+        }
+       },
+       {
+        "type": "instrument",
+        "attributes": [
+         "trumpet"
+        ],
+        "artist": {
+         "id": "561d854a-6a28-4aa7-8c99-323e6ce46c2a",
+         "name": "Miles Davis"
+        }
+       },
+       {
+        "type": "instrument",
+        "attributes": [
+         "piano"
+        ],
+        "artist": {
+         "id": "8247a3f2-3a8e-4256-b322-6c57b03a4e36",
+         "name": "Bill Evans"
+        }
+       },
+       {
+        "type": "producer",
+        "attributes": [],
+        "artist": {
+         "id": "5ca16cfc-f480-4203-93e7-f35080d12d60",
+         "name": "Irving Townsend"
+        }
+       }
+      ]
+     },
+     "id": "4f7bdaab-f342-3d59-88f8-2a0480497f18",
+     "title": "All Blues"
+    },
+    {
+     "number": "B2",
+     "position": 5,
+     "length": 564800,
+     "title": "Flamenco Sketches",
+     "id": "938628b8-24da-391f-9d2f-16c6f864b9ee",
+     "recording": {
+      "id": "250b3f1d-7620-42a9-87b3-5d1a166e0f2f",
+      "title": "Flamenco Sketches",
+      "relations": [
+       {
+        "type": "instrument",
+        "attributes": [
+         "alto saxophone"
+        ],
+        "artist": {
+         "id": "a4c73ebe-b2c7-4f13-b99d-2fe1f9f27da8",
+         "name": "Cannonball Adderley"
+        }
+       },
+       {
+        "type": "instrument",
+        "attributes": [
+         "double bass"
+        ],
+        "artist": {
+         "id": "b6ff4fd0-03ae-41a6-942e-7de13124b970",
+         "name": "Paul Chambers"
+        }
+       },
+       {
+        "type": "instrument",
+        "attributes": [
+         "drums (drum set)"
+        ],
+        "artist": {
+         "id": "d0cbf65a-541b-476a-996c-fe2cd264bbd0",
+         "name": "Jimmy Cobb"
+        }
+       },
+       {
+        "type": "instrument",
+        "attributes": [
+         "tenor saxophone"
+        ],
+        "artist": {
+         "id": "b625448e-bf4a-41c3-a421-72ad46cdb831",
+         "name": "John Coltrane"
+        }
+       },
+       {
+        "type": "instrument",
+        "attributes": [
+         "trumpet"
+        ],
+        "artist": {
+         "id": "561d854a-6a28-4aa7-8c99-323e6ce46c2a",
+         "name": "Miles Davis"
+        }
+       },
+       {
+        "type": "instrument",
+        "attributes": [
+         "piano"
+        ],
+        "artist": {
+         "id": "8247a3f2-3a8e-4256-b322-6c57b03a4e36",
+         "name": "Bill Evans"
+        }
+       },
+       {
+        "type": "producer",
+        "attributes": [],
+        "artist": {
+         "id": "5ca16cfc-f480-4203-93e7-f35080d12d60",
+         "name": "Irving Townsend"
+        }
+       },
+       {
+        "type": "recording",
+        "attributes": [],
+        "artist": {
+         "id": "febc30e8-5033-4c65-b25c-084c872be8e5",
+         "name": "Fred Plaut"
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "title": "",
+   "id": "39677cb2-67e8-3344-acdf-6cc91f71b4bd",
+   "format-id": "3e9080b0-5e6c-34ab-bd15-f526b6306a64"
+  }
+ ],
+ "release-events": [
+  {
+   "date": "1959-08-17",
+   "area": {
+    "sort-name": "United States",
+    "type": null,
+    "disambiguation": "",
+    "iso-3166-1-codes": [
+     "US"
+    ],
+    "id": "489ce91b-6658-3307-9877-795b68554c98",
+    "name": "United States",
+    "type-id": null
+   }
+  }
+ ],
+ "relations": [
+  {
+   "direction": "backward",
+   "type-id": "01323b4f-7aba-410c-8c91-cb224b963a40",
+   "begin": null,
+   "attribute-values": {},
+   "target-credit": "",
+   "type": "liner notes",
+   "source-credit": "",
+   "end": null,
+   "ended": false,
+   "artist": {
+    "disambiguation": "pianist",
+    "type": "Person",
+    "sort-name": "Evans, Bill",
+    "name": "Bill Evans",
+    "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df",
+    "country": "US",
+    "id": "8247a3f2-3a8e-4256-b322-6c57b03a4e36"
+   },
+   "attributes": [],
+   "target-type": "artist",
+   "attribute-ids": {}
+  }
+ ],
+ "cover-art-archive": {
+  "darkened": false,
+  "back": true,
+  "count": 6,
+  "artwork": true,
+  "front": true
+ },
+ "title": "Kind of Blue",
+ "genres": [
+  {
+   "disambiguation": "",
+   "name": "jazz",
+   "count": 2,
+   "id": "a715278f-1580-409f-8078-4ffbc800e08b"
+  },
+  {
+   "id": "ff60b411-27db-4bd3-a444-3afe92cbfa7e",
+   "count": 1,
+   "disambiguation": "",
+   "name": "modal jazz"
+  }
+ ],
+ "label-info": [
+  {
+   "catalog-number": "CS 8163",
+   "label": {
+    "sort-name": "Columbia",
+    "label-code": 162,
+    "type": "Imprint",
+    "disambiguation": "owned by Sony Music Entertainment, worldwide except JP; formerly owned by CBS between 1938–1990 within US/CA/MX",
+    "id": "011d1192-6f65-45bd-85c4-0400dd45693e",
+    "type-id": "b6285b2a-3514-3d43-80df-fcf528824ded",
+    "name": "Columbia",
+    "genres": [
+     {
+      "count": 2,
+      "id": "ceeaa283-5d7b-4202-8d1d-e25d116b2a18",
+      "disambiguation": "",
+      "name": "alternative rock"
+     },
+     {
+      "disambiguation": "",
+      "name": "folk rock",
+      "id": "445dc48f-5233-4b4f-987f-867ff9ade836",
+      "count": 1
+     },
+     {
+      "name": "heartland rock",
+      "disambiguation": "",
+      "id": "52856ec0-9f9b-45f4-ab09-1bb8cc0a98e4",
+      "count": 1
+     },
+     {
+      "count": 1,
+      "id": "52faa157-6bad-4d86-a0ab-d4dec7d2513c",
+      "disambiguation": "",
+      "name": "hip hop"
+     },
+     {
+      "disambiguation": "",
+      "name": "indie rock",
+      "id": "ccd19ebf-052c-4afe-8ad9-fbb0a73f94a7",
+      "count": 2
+     },
+     {
+      "id": "146ef761-5ad9-48b4-b0b3-483104f7da48",
+      "count": 2,
+      "disambiguation": "",
+      "name": "psychedelic rock"
+     },
+     {
+      "count": 2,
+      "id": "0e3fc579-2d24-4f20-9dae-736e1ec78798",
+      "disambiguation": "",
+      "name": "rock"
+     }
+    ]
+   }
+  }
+ ],
+ "id": "bee5e0cd-1767-4a8e-9578-6455e87ba60b",
+ "date": "1959-08-17"
+}

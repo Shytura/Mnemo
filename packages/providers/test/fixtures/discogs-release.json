@@ -1,0 +1,217 @@
+{
+ "id": 2772432,
+ "status": "Accepted",
+ "year": 2010,
+ "resource_url": "https://api.discogs.com/releases/2772432",
+ "uri": "https://www.discogs.com/release/2772432-Miles-Davis-Kind-Of-Blue",
+ "artists": [
+  {
+   "name": "Miles Davis",
+   "anv": "",
+   "join": "",
+   "role": "",
+   "tracks": "",
+   "id": 23755,
+   "resource_url": "https://api.discogs.com/artists/23755",
+   "thumbnail_url": "https://i.discogs.com/-ov32suDuJlZACym6tbwfcu4dFWYrGXmvlnWi1qrwh0/rs:fit/g:sm/q:90/h:600/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9BLTIzNzU1/LTE3NTY0ODc2NjMt/NDA3My5qcGVn.jpeg"
+  }
+ ],
+ "artists_sort": "Miles Davis",
+ "labels": [
+  {
+   "name": "Columbia",
+   "catno": "CS 8163",
+   "entity_type": "1",
+   "entity_type_name": "Label",
+   "id": 1866,
+   "resource_url": "https://api.discogs.com/labels/1866",
+   "thumbnail_url": "https://i.discogs.com/JuO51-lZvasOtw8-yLUjsen-4O17uPH1A9SILCO-lG4/rs:fit/g:sm/q:90/h:300/w:299/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9MLTE4NjYt/MTIzMzE5MzU1Ny5q/cGVn.jpeg"
+  }
+ ],
+ "formats": [
+  {
+   "name": "Vinyl",
+   "qty": "1",
+   "descriptions": [
+    "LP",
+    "Album",
+    "Reissue",
+    "Stereo"
+   ],
+   "text": "180 gram"
+  }
+ ],
+ "format_quantity": 1,
+ "master_id": 5460,
+ "master_url": "https://api.discogs.com/masters/5460",
+ "title": "Kind Of Blue",
+ "country": "France",
+ "released": "2010",
+ "released_formatted": "2010",
+ "identifiers": [
+  {
+   "type": "Matrix / Runout",
+   "value": "XSM 47326",
+   "description": "Side A [label]"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "XSM 47327",
+   "description": "Side B [label]"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "85700 1A 01-MILES DAVIS A",
+   "description": "Stamped & etched (\"A\") runout, side A"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "85700 1B 01-MILES DAVIS A",
+   "description": "Stamped & etched (\"A\") runout, side B"
+  },
+  {
+   "type": "Depósito Legal",
+   "value": "NA-13-2011"
+  }
+ ],
+ "genres": [
+  "Jazz"
+ ],
+ "styles": [
+  "Modal"
+ ],
+ "tracklist": [
+  {
+   "position": "A1",
+   "type_": "track",
+   "title": "So What",
+   "duration": "8:56"
+  },
+  {
+   "position": "A2",
+   "type_": "track",
+   "title": "Freddie Freeloader",
+   "duration": "9:32"
+  },
+  {
+   "position": "A3",
+   "type_": "track",
+   "title": "Blue In Green",
+   "duration": "5:27"
+  },
+  {
+   "position": "B1",
+   "type_": "track",
+   "title": "All Blues",
+   "duration": "11:34"
+  },
+  {
+   "position": "B2",
+   "type_": "track",
+   "title": "Flamenco Sketches",
+   "duration": "9:32"
+  }
+ ],
+ "extraartists": [
+  {
+   "name": "Cannonball Adderley",
+   "anv": "",
+   "join": "",
+   "role": "Alto Saxophone",
+   "tracks": "A1, A2, B1, B2",
+   "id": 61585,
+   "resource_url": "https://api.discogs.com/artists/61585"
+  },
+  {
+   "name": "Paul Chambers (3)",
+   "anv": "",
+   "join": "",
+   "role": "Bass",
+   "tracks": "",
+   "id": 259778,
+   "resource_url": "https://api.discogs.com/artists/259778"
+  },
+  {
+   "name": "Jimmy Cobb",
+   "anv": "",
+   "join": "",
+   "role": "Drums",
+   "tracks": "",
+   "id": 252311,
+   "resource_url": "https://api.discogs.com/artists/252311"
+  },
+  {
+   "name": "Bill Evans",
+   "anv": "",
+   "join": "",
+   "role": "Liner Notes",
+   "tracks": "",
+   "id": 252310,
+   "resource_url": "https://api.discogs.com/artists/252310"
+  },
+  {
+   "name": "Bill Evans",
+   "anv": "",
+   "join": "",
+   "role": "Piano",
+   "tracks": "A1, A3, B1, B2",
+   "id": 252310,
+   "resource_url": "https://api.discogs.com/artists/252310"
+  },
+  {
+   "name": "Wynton Kelly",
+   "anv": "",
+   "join": "",
+   "role": "Piano",
+   "tracks": "A2",
+   "id": 252308,
+   "resource_url": "https://api.discogs.com/artists/252308"
+  },
+  {
+   "name": "John Coltrane",
+   "anv": "",
+   "join": "",
+   "role": "Tenor Saxophone",
+   "tracks": "",
+   "id": 97545,
+   "resource_url": "https://api.discogs.com/artists/97545"
+  },
+  {
+   "name": "Miles Davis",
+   "anv": "",
+   "join": "",
+   "role": "Trumpet",
+   "tracks": "",
+   "id": 23755,
+   "resource_url": "https://api.discogs.com/artists/23755"
+  },
+  {
+   "name": "Miles Davis",
+   "anv": "M. Davis",
+   "join": "",
+   "role": "Written-By",
+   "tracks": "",
+   "id": 23755,
+   "resource_url": "https://api.discogs.com/artists/23755"
+  }
+ ],
+ "images": [
+  {
+   "type": "primary",
+   "uri": "https://i.discogs.com/HocOgI_8yE8Ggm3X0gCbXOy0IjNiP_rNr2a24dizxz4/rs:fit/g:sm/q:90/h:500/w:500/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTI3NzI0/MzItMTMwMjg0NjQ4/OC5qcGVn.jpeg",
+   "resource_url": "https://i.discogs.com/HocOgI_8yE8Ggm3X0gCbXOy0IjNiP_rNr2a24dizxz4/rs:fit/g:sm/q:90/h:500/w:500/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTI3NzI0/MzItMTMwMjg0NjQ4/OC5qcGVn.jpeg",
+   "uri150": "https://i.discogs.com/QP6-9bENVcMw1-tYIu-2GaG0YgFuf7otB5WUmaMJm9w/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTI3NzI0/MzItMTMwMjg0NjQ4/OC5qcGVn.jpeg",
+   "width": 500,
+   "height": 500
+  },
+  {
+   "type": "secondary",
+   "uri": "https://i.discogs.com/YJgBfAEKEZK_bIYwrp0mvYyRgL6cVm4tL_fS67mu4YQ/rs:fit/g:sm/q:90/h:600/w:595/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTI3NzI0/MzItMTUxNDY2NDY2/OS0xMzUzLmpwZWc.jpeg",
+   "resource_url": "https://i.discogs.com/YJgBfAEKEZK_bIYwrp0mvYyRgL6cVm4tL_fS67mu4YQ/rs:fit/g:sm/q:90/h:600/w:595/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTI3NzI0/MzItMTUxNDY2NDY2/OS0xMzUzLmpwZWc.jpeg",
+   "uri150": "https://i.discogs.com/pJdIgKgeEc2RNcKrHzYHifHgETerISp5FXaEaehDFIo/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTI3NzI0/MzItMTUxNDY2NDY2/OS0xMzUzLmpwZWc.jpeg",
+   "width": 595,
+   "height": 600
+  }
+ ],
+ "thumb": "https://i.discogs.com/QP6-9bENVcMw1-tYIu-2GaG0YgFuf7otB5WUmaMJm9w/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTI3NzI0/MzItMTMwMjg0NjQ4/OC5qcGVn.jpeg"
+}
