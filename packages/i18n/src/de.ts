@@ -25,6 +25,14 @@ export const de = {
     venue: 'Museum oder Ort',
     trip: 'Reiseidee',
   },
+  scan: {
+    torch: 'Licht',
+    stop: 'Scan beenden',
+    insecure: 'Die Kamera lässt sich nur über eine sichere Verbindung (https) nutzen.',
+    denied: 'Mnemo darf die Kamera nicht nutzen. Erlaube den Zugriff in den Browser-Einstellungen.',
+    noCamera: 'Keine Kamera gefunden.',
+    failed: 'Der Scanner ließ sich nicht starten.',
+  },
   footer: {
     colophon: 'Mnemo – ein Archiv deiner Begegnungen mit Kunst.',
     local: 'Alle Daten bleiben auf diesem Gerät.',
@@ -347,14 +355,7 @@ export const de = {
     scan: {
       button: 'ISBN scannen',
       hint: 'Halte den Strichcode auf der Rückseite in den Rahmen.',
-      torch: 'Licht',
-      stop: 'Scan beenden',
-      insecure:
-        'Die Kamera lässt sich nur über eine sichere Verbindung (https) nutzen. Tippe die ISBN einfach ein.',
-      denied:
-        'Mnemo darf die Kamera nicht nutzen. Erlaube den Zugriff in den Browser-Einstellungen oder tippe die ISBN ein.',
-      noCamera: 'Keine Kamera gefunden. Tippe die ISBN einfach ein.',
-      failed: 'Der Scanner ließ sich nicht starten. Tippe die ISBN einfach ein.',
+      typeInstead: 'Tippe die ISBN einfach ein.',
     },
     add: {
       eyebrow: 'Buch hinzufügen',

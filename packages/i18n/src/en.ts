@@ -26,6 +26,14 @@ export const en: Translation<typeof de> = {
     venue: 'Museum or place',
     trip: 'Trip idea',
   },
+  scan: {
+    torch: 'Light',
+    stop: 'Stop scanning',
+    insecure: 'The camera only works over a secure connection (https).',
+    denied: 'Mnemo may not use the camera. Allow it in the browser settings.',
+    noCamera: 'No camera found.',
+    failed: 'The scanner could not start.',
+  },
   footer: {
     colophon: 'Mnemo – an archive of your encounters with art.',
     local: 'All data stays on this device.',
@@ -348,12 +356,7 @@ export const en: Translation<typeof de> = {
     scan: {
       button: 'Scan ISBN',
       hint: 'Hold the barcode on the back inside the frame.',
-      torch: 'Light',
-      stop: 'Stop scanning',
-      insecure: 'The camera only works over a secure connection (https). Just type the ISBN.',
-      denied: 'Mnemo may not use the camera. Allow it in the browser settings or type the ISBN.',
-      noCamera: 'No camera found. Just type the ISBN.',
-      failed: 'The scanner could not start. Just type the ISBN.',
+      typeInstead: 'Just type the ISBN.',
     },
     add: {
       eyebrow: 'Add book',

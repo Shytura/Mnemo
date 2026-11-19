@@ -1,4 +1,4 @@
-import { normalizeIsbn } from '@mnemo/core';
+import { isbnFromBarcode, normalizeIsbn } from '@mnemo/core';
 import { availableBookProviders, type BookSearchResult, lookupIsbn } from '@mnemo/providers';
 import { Button, Dialog, DialogContent, Input, Spinner } from '@mnemo/ui';
 import { useQueries, useQuery } from '@tanstack/react-query';
@@ -9,11 +9,11 @@ import { useTranslation } from 'react-i18next';
 import { useBooks, useProviderContext } from '../../app/data';
 import type { DialogProps } from '../../app/dialogs';
 import { useDialogs } from '../../app/dialogs';
+import { BarcodeScanner } from '../../components/BarcodeScanner';
 import { BookCover } from '../../components/BookCover';
 import { ErrorNote } from '../../components/bits';
 import { useFormat } from '../../lib/format';
 import { useDebounced } from '../../lib/hooks';
-import { IsbnScanner } from './IsbnScanner';
 
 /**
  * One field for everything: an ISBN is looked up directly in all catalogues, anything else
@@ -124,7 +124,10 @@ export function AddBookDialog({ spec, onClose }: DialogProps<'addBook'>) {
       >
         {scanning && (
           <div className="mb-5">
-            <IsbnScanner
+            <BarcodeScanner
+              read={isbnFromBarcode}
+              hint={t('book.scan.hint')}
+              fallback={t('book.scan.typeInstead')}
               onDetect={(found) => {
                 setText(found);
                 setScanning(false);
