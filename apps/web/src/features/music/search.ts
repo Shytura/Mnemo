@@ -1,6 +1,6 @@
 import { type RecordOwnership, type RecordSort, recordOwnerships, recordSorts } from '@mnemo/core';
 
-export const recordViews = ['wall', 'shelf', 'list'] as const;
+export const recordViews = ['wall', 'crate', 'shelf', 'list'] as const;
 export type RecordView = (typeof recordViews)[number];
 
 /** URL search params of the record collection; every filter is shareable as a link. */

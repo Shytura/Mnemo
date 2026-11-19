@@ -355,6 +355,12 @@ test('a record goes on the wall with its sides, its designer and where it was bo
   await page.goto('/records?q=lamplight&view=shelf');
   await expect(page.getByText('1 Platte', { exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Ada Mercer Quartet – Blue Hour' })).toBeVisible();
+
+  // In the crate the record stands in front and opens with Enter.
+  await page.goto('/records?view=crate');
+  await expect(page.getByText('1 von 1')).toBeVisible();
+  await page.getByRole('listbox').press('Enter');
+  await expect(page.getByRole('heading', { level: 1, name: 'Blue Hour' })).toBeVisible();
 });
 
 test('a barcode finds the pressing, and its sides and players come along', async ({ page }) => {

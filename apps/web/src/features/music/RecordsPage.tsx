@@ -24,6 +24,7 @@ import {
   GalleryHorizontalIcon,
   HandshakeIcon,
   HeartIcon,
+  LayersIcon,
   LayoutGridIcon,
   ListIcon,
   PlusIcon,
@@ -38,6 +39,7 @@ import { useDialogs } from '../../app/dialogs';
 import { RecordCard } from '../../components/RecordCard';
 import { RecordSleeve } from '../../components/RecordSleeve';
 import { useFormat } from '../../lib/format';
+import { RecordCrate } from './RecordCrate';
 import { RecordShelf } from './RecordShelf';
 import type { RecordsSearch, RecordView } from './search';
 
@@ -212,6 +214,8 @@ export function RecordsPage() {
 
 function RecordResults({ view, records }: { view: RecordView; records: MusicRecord[] }) {
   switch (view) {
+    case 'crate':
+      return <RecordCrate records={records} />;
     case 'shelf':
       return <RecordShelf records={records} />;
     case 'list':
@@ -264,6 +268,7 @@ function Toolbar({
 
   const views: Array<{ value: RecordView; icon: typeof ListIcon }> = [
     { value: 'wall', icon: LayoutGridIcon },
+    { value: 'crate', icon: LayersIcon },
     { value: 'shelf', icon: GalleryHorizontalIcon },
     { value: 'list', icon: ListIcon },
   ];
