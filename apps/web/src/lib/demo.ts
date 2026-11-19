@@ -1,9 +1,12 @@
 import {
   type BookDraft,
   createId,
+  logSpin,
   type MnemoStore,
+  type RecordDraft,
   saveArtwork,
   saveBook,
+  saveRecord,
   type VenueKind,
 } from '@mnemo/core';
 import { saveRemoteImage } from './media';
@@ -330,6 +333,95 @@ const BOOKS: Array<{ draft: (locale: 'de' | 'en') => BookDraft; dutch?: boolean 
   },
 ];
 
+/**
+ * Records whose sleeves belong to art history. No covers are stored (they are not free to
+ * use), so the printed sleeves show.
+ */
+const RECORDS: Array<(locale: 'de' | 'en') => RecordDraft> = [
+  (locale) => ({
+    title: 'Kind of Blue',
+    artists: ['Miles Davis'],
+    label: 'Columbia',
+    catalogNumber: 'CS 8163',
+    releaseYear: 1959,
+    country: 'US',
+    format: 'lp',
+    size: '12',
+    speed: '33',
+    channels: 'stereo',
+    genres: ['Jazz', 'Modal'],
+    favorite: true,
+    rating: 5,
+    conditionMedia: 'VG+',
+    conditionSleeve: 'VG',
+    tracks: [
+      { position: 'A1', title: 'So What', duration: 562 },
+      { position: 'A2', title: 'Freddie Freeloader', duration: 586 },
+      { position: 'A3', title: 'Blue in Green', duration: 337 },
+      { position: 'B1', title: 'All Blues', duration: 693 },
+      { position: 'B2', title: 'Flamenco Sketches', duration: 566 },
+    ],
+    credits: [
+      { name: 'John Coltrane', role: 'musician', detail: 'tenor saxophone' },
+      { name: 'Cannonball Adderley', role: 'musician', detail: 'alto saxophone' },
+      { name: 'Bill Evans', role: 'musician', detail: 'piano' },
+      { name: 'Paul Chambers', role: 'musician', detail: 'bass' },
+      { name: 'Jimmy Cobb', role: 'musician', detail: 'drums' },
+      { name: 'Irving Townsend', role: 'producer' },
+    ],
+    acquisition: { date: '2024-09-21', price: 28, currency: 'EUR', gift: false },
+    notes:
+      locale === 'de'
+        ? 'Gekauft am Tag nach dem Rijksmuseum, in einem Laden voller Jazz.'
+        : 'Bought the day after the Rijksmuseum, in a shop full of jazz.',
+  }),
+  (locale) => ({
+    title: 'The Velvet Underground & Nico',
+    artists: ['The Velvet Underground', 'Nico'],
+    label: 'Verve',
+    catalogNumber: 'V6-5008',
+    releaseYear: 1967,
+    country: 'US',
+    format: 'lp',
+    size: '12',
+    genres: ['Rock'],
+    tags: [locale === 'de' ? 'Pop-Art' : 'pop art'],
+    credits: [
+      { name: 'Andy Warhol', role: 'artwork', detail: locale === 'de' ? 'Banane' : 'banana' },
+      { name: 'Andy Warhol', role: 'producer' },
+    ],
+    tracks: [
+      'Sunday Morning',
+      "I'm Waiting for the Man",
+      'Femme Fatale',
+      'Venus in Furs',
+      'Run Run Run',
+      "All Tomorrow's Parties",
+    ]
+      .map((title, i) => ({ position: `A${i + 1}`, title }))
+      .concat(
+        [
+          'Heroin',
+          'There She Goes Again',
+          "I'll Be Your Mirror",
+          "The Black Angel's Death Song",
+          'European Son',
+        ].map((title, i) => ({ position: `B${i + 1}`, title })),
+      ),
+  }),
+  () => ({
+    title: 'Unknown Pleasures',
+    artists: ['Joy Division'],
+    label: 'Factory',
+    catalogNumber: 'FACT 10',
+    releaseYear: 1979,
+    country: 'UK',
+    genres: ['Post-Punk'],
+    ownership: 'wishlist',
+    credits: [{ name: 'Peter Saville', role: 'design' }],
+  }),
+];
+
 export async function seedDemo(
   store: MnemoStore,
   locale: 'de' | 'en',
@@ -423,6 +515,16 @@ export async function seedDemo(
       ...dutchBooks.map((id) => ({ kind: 'book' as const, id })),
     ],
   });
+
+  // One after another: records may share people, and each save links or creates them.
+  const records = [];
+  for (const r of RECORDS) records.push(await saveRecord(store, r(locale)));
+  const [kindOfBlue] = records;
+  if (kindOfBlue) {
+    const yesterday = new Date(Date.now() - 86_400_000);
+    yesterday.setHours(21, 30, 0, 0);
+    await logSpin(store, kindOfBlue.id, { playedAt: yesterday.toISOString(), sides: ['A'] });
+  }
 
   await store.trips.create({
     title: locale === 'de' ? 'Florenz im Frühling' : 'Florence in spring',

@@ -135,7 +135,7 @@ export function RecordCrate({ records }: { records: MusicRecord[] }) {
         onPointerCancel={() => {
           drag.current = null;
         }}
-        className="relative mx-auto mt-16 h-[clamp(22rem,62vh,36rem)] touch-none select-none rounded-[6px] outline-none [perspective:1500px] [perspective-origin:50%_0%] focus-visible:ring-1 focus-visible:ring-accent/40"
+        className="relative mx-auto mt-16 h-[clamp(22rem,62vh,36rem)] touch-none select-none rounded-[6px] outline-none [perspective:1500px] [perspective-origin:50%_0%] focus-visible:ring-1 focus-visible:ring-line-strong"
       >
         <div className="absolute inset-x-[16%] top-[38%] bottom-[14%] [transform-style:preserve-3d] sm:inset-x-[23%]">
           {records.map((record, i) => {

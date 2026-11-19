@@ -4,6 +4,37 @@ All notable changes to Mnemo. The format follows [Keep a Changelog](https://keep
 and the app uses [Semantic Versioning](https://semver.org/). User-facing release notes live in
 `apps/web/src/changelog.ts` and appear in the app under “What's new”.
 
+## [0.5.0] – 2026-11-19
+
+Records, the third collectible kind, and the first with a log of its own.
+
+### Added
+- **Records** (`records` table, schema 5): artists plus `credits` with roles (musician,
+  producer, engineer, design, artwork, photography, liner notes), all linked through
+  `creatorIds` in the order of `recordPeople()`. Pressing data (label, catalogue number,
+  barcode, country, format, size, speed, discs, variant, vinyl colour, matrix), Goldmine grades
+  for record and sleeve, `tracks` with positions and lengths, `acquisition` (date, price,
+  shop venue, trip, gift) and `loan`. Services in `core/services/music.ts`.
+- **Spins** (`spins` table): one row per listen, so a long log stays cheap to query and will
+  sync row by row. `logSpin`, `nowPlaying`, `pickRecord`, `computeMusicInsights`; deleting a
+  record deletes its spins.
+- Barcode helpers `normalizeBarcode`, `barcodeVariants`, `sameBarcode` and
+  `productCodeFromBarcode` (EAN-13/UPC-A); `parseTracklist`/`formatTracklist` for typed
+  tracklists; `removeTrip` clears purchases made on a trip.
+- Venue kind `recordShop`.
+- **Record catalogues** in `providers/src/music/`: MusicBrainz (dismax search, barcode in both
+  spellings, 1 request/s) with Cover Art Archive covers, Discogs with a personal token.
+  `lookupRecordBarcode` asks every usable catalogue.
+- **Music module** (`/records`, `/record/$recordId`): wall, crate, shelf and list views,
+  detail page, catalogue search and manual form, spin dialog, “What shall I play?”, the
+  turntable in the Salon and a music section in insights.
+
+### Changed
+- The ISBN scanner became `BarcodeScanner` (EAN-13 and UPC-A); camera texts moved to `scan`.
+- `computeInsights` takes records and spins; `topCreators` counts records.
+- Shared exports bring a record's shop along but never its listening log.
+- Page numbering shifted by one for the Phonothek (III).
+
 ## [0.4.0] – 2026-10-23
 
 The library, and the first collectible kind beside artworks.

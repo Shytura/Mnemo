@@ -11,6 +11,10 @@ Mnemosyne, the goddess of memory and mother of the Muses, after whom the museum 
 | ![Salon hang](docs/screenshots/salon-wall.webp) | ![Atlas](docs/screenshots/atlas.webp) |
 | **Trip planner** | **Dark mode with the “Nocturne” background** |
 | ![Trip planner](docs/screenshots/trip.webp) | ![Dark mode](docs/screenshots/salon-dark.webp) |
+| **Phonothek: wall of sleeves** | **Crate digging** |
+| ![Records on the wall](docs/screenshots/records-wall.webp) | ![Crate](docs/screenshots/records-crate.webp) |
+| **A record, set like a museum label** | **On the turntable** |
+| ![Record page](docs/screenshots/record.webp) | ![Turntable](docs/screenshots/turntable.webp) |
 
 ## Features
 
@@ -25,9 +29,11 @@ Mnemosyne, the goddess of memory and mother of the Muses, after whom the museum 
 | **Planner** | Board with Idea, Planned and Done (drag & drop). Per trip: suggestions from **OpenStreetMap** with Wikipedia texts and images, a sortable watchlist, a map. Checked-off places can become a visit in the journal |
 | **Discover** | Combined search across Wikidata/Commons, Art Institute of Chicago, The Met and Cleveland Museum of Art (optionally Europeana and Harvard with a key). Add results as “seen” or “want to see” |
 | **Library** | Books on a shelf of covers (cloth bindings when there is none), reading status and progress, readings over the years, quotes, lending. Add by **ISBN scan**, ISBN or search in Open Library and the Deutsche Nationalbibliothek (Google Books with a key) |
-| **Lists** | Lists mix works and books, each with its own page and drag-and-drop order |
-| **People** | A page per artist or author with life dates, portrait, Wikipedia text and all their works and books; link to Wikidata in one step |
-| **Insights** | Countries, cities, visits, colour spectrum of all works seen, visits per year, periods, books read per year and pages, most collected people |
+| **Phonothek** | Records as a **wall of sleeves** (the record slides out on hover), in a **crate** to flip through, spine-out on a **shelf** or as a list. Pressing details set like a museum label, sides like the record label, Goldmine grades for record and sleeve, credits and **provenance** (shop, trip, gift). Add by **barcode scan**, barcode or search in MusicBrainz (Discogs with a token) |
+| **Listening** | Play a record and it turns on the **turntable** in the Salon; a listening log per record, “What shall I play?” for records that waited longest |
+| **Lists** | Lists mix works, books and records, each with its own page and drag-and-drop order |
+| **People** | A page per artist, author, musician or designer with life dates, portrait, Wikipedia text and everything of theirs in the archive; link to Wikidata in one step |
+| **Insights** | Countries, cities, visits, colour spectrum of all works seen, visits per year, periods, books read per year and pages, records and hours listened, a year of listening as a calendar, most collected people |
 | **Personalisation** | Light, dark or system; accent colours based on painting pigments or taken automatically from the artwork of the day; backgrounds: paper, five gradients, one of your works, your own image or the artwork of the day (blurred) |
 | **Data** | Everything stays local in the browser (IndexedDB), works offline (PWA), ZIP backup, JSON export for sharing, import |
 | **Languages** | German and English, with type-checked translation keys |
@@ -60,14 +66,14 @@ Settings → Data.
 ```
 apps/
   web/            PWA: React 19, TanStack Router + Query, Tailwind v4
-    src/modules/  one folder per area (home, art, library, people, travel): nav, quick add,
+    src/modules/  one folder per area (home, art, library, music, people, travel): nav, quick add,
                   dialogs, routes and the views of the collectible kinds it owns
     src/features/ the pages and forms the modules wire up
   embed-demo/     third-party sample page that embeds the widget
 packages/
   core/           data model (zod), repository contracts, domain logic – no React, no DB
   storage-dexie/  IndexedDB implementation of the store
-  providers/      adapters for museum APIs, book catalogues, geocoding, POIs, Wikipedia
+  providers/      adapters for museum APIs, book and record catalogues, geocoding, POIs, Wikipedia
   ui/             design system: tokens, Tailwind theme, components
   i18n/           de/en dictionaries + i18next setup
   embed/          <mnemo-gallery> web component (12 kB, no framework)
@@ -98,7 +104,7 @@ and link the people behind it through `creatorIds`. Creators can be linked to Wi
 dates, portrait and Wikipedia article. Books link their authors the same way, so one person
 page shows a painter's works and the books they wrote.
 
-**Collectibles and lists.** Types that can be collected (artworks, books) share
+**Collectibles and lists.** Types that can be collected (artworks, books, records) share
 `collectibleShape` (title, favourite, tags, notes, images, palette, creators). Lists hold typed
 references `{ kind, id }`, so one list mixes kinds. In the web app each module registers how
 its kinds look (`AppModule.collectibles`); people pages and list pages render any kind
@@ -169,7 +175,8 @@ A new collection type such as books touches these places, in this order:
 1. **Model** – schemas in `packages/core/src/model/entities.ts` (spread `collectibleShape`), add
    the kind to `collectibleKinds`, register the table in `registry.ts` and `collectibleTables`.
    The compiler then points at every place that must handle the new kind (e.g. `subsetArchive`).
-   People, lists and backups work for it from here on. The library (`book`) is the worked
+   People, lists and backups work for it from here on. The library (`book`) and the records
+   (`record`, with its listening log in a table of its own) are the worked
    example.
 2. **Migration** – bump `SCHEMA_VERSION`, append a step to `migrations.ts` (`tables: {}` if no
    existing rows change) and add the new table's indexes under that version in `STORES`
@@ -191,12 +198,14 @@ Implement `ArtworkSearchProvider` in `packages/providers/src/art/` and register 
 `artProviders` (`packages/providers/src/index.ts`). “Discover” then shows it automatically.
 Book catalogues work the same way: implement `BookSearchProvider` (search and ISBN lookup) in
 `packages/providers/src/books/` and register it in `bookProviders`; the add dialog and
-`lookupIsbn` pick it up. Please test mapper functions against a real, trimmed API response in
+`lookupIsbn` pick it up. Record catalogues implement `RecordSearchProvider` (search, barcode
+and the full release) in `packages/providers/src/music/` and join `recordProviders`. Please test
+mapper functions against a real, trimmed API response in
 `test/fixtures/`.
 
 ## External services: notes from practice
 
-All services are free; only Google Books needs a key of your own. The code handles a few quirks:
+All services are free; only Google Books and Discogs need a key of your own. The code handles a few quirks:
 
 - **The Met:** The old search API `v1/search` was shut down on October 1, 2026. Mnemo uses
   `v1.1/search`.
@@ -219,7 +228,14 @@ All services are free; only Google Books needs a key of your own. The code handl
 - **Deutsche Nationalbibliothek:** The SRU interface answers in XML with CORS; `mat=books`
   keeps archive material out of searches. Its cover service sends no CORS headers, so those
   covers are linked, not stored. Open Library covers are stored for offline use.
-- **ISBN scan:** Needs camera access, so a secure origin (https or localhost). To try it on a
+- **MusicBrainz:** Allows one request per second, so Mnemo spaces its requests. Free-text
+  searches use `dismax=true`, which matches title, artist and label together; without it the
+  words only match the title. Barcodes are queried as UPC-A and EAN-13, since releases list
+  whichever was printed. Cover Art Archive answers with CORS, so covers are stored offline.
+- **Discogs:** Searches work without a token today but return no images, so Discogs only joins
+  with a personal token (Settings). The token is sent as a query parameter to avoid a CORS
+  preflight. Its image host sends no CORS headers, so Discogs covers are linked, not stored.
+- **Barcode and ISBN scan:** Needs camera access, so a secure origin (https or localhost). To try it on a
   phone in development, serve over https.
 
 ## Privacy
@@ -236,11 +252,16 @@ The foundation (registry, migrations, typed lists, app modules) is in place for 
 1. ~~**People:**~~ done in 0.3: creators linked to Wikidata.
 2. ~~**Library:**~~ done in 0.4: books with ISBN scan, catalogues, reading status, quotes,
    lending and lists that mix kinds.
-3. **More data:** further museum APIs (Rijksmuseum, V&A, Smithsonian), a `⌘K` search across all
+3. ~~**Records:**~~ done in 0.5: the Phonothek with catalogues, barcode scan, crate, listening
+   log and turntable. Next for records: import a Discogs collection (CSV or username), record
+   shops as trip suggestions (OpenStreetMap `shop=music`), concerts in the journal, 30-second
+   previews, turntable and stylus hours, the value of the collection, label pages and sleeve
+   recognition from a photo.
+4. **More data:** further museum APIs (Rijksmuseum, V&A, Smithsonian), a `⌘K` search across all
    collectibles, `.ics` export of trips.
-4. **Hosting & sync:** static hosting first; then a `sync` package (e.g. Supabase) on top of the
+5. **Hosting & sync:** static hosting first; then a `sync` package (e.g. Supabase) on top of the
    local store, with `deletedAt` tombstones so deletions reach other devices.
-5. **Assistance:** optional AI features (descriptions, tags, museum label OCR) behind a server
+6. **Assistance:** optional AI features (descriptions, tags, museum label OCR) behind a server
    proxy, so no API key lives in the browser.
 
 Smaller ideas: exhibition mode (full-screen slideshow), an art passport of visited museums, a

@@ -21,6 +21,42 @@ export interface Release {
 
 export const releases: readonly Release[] = [
   {
+    version: '0.5.0',
+    date: '2026-11-19',
+    entries: [
+      {
+        kind: 'new',
+        de: 'Die Phonothek: deine Schallplatten als Cover-Wand, Rücken an Rücken im Regal, als Liste – oder in der Plattenkiste, durch die du mit Mausrad, Pfeiltasten oder Wischen blätterst.',
+        en: 'The record collection: your records as a wall of sleeves, spine by spine on a shelf, as a list – or in a crate you flip through with the wheel, the arrow keys or a swipe.',
+      },
+      {
+        kind: 'new',
+        de: 'Platten per Barcode-Scan, über den Barcode oder per Suche in MusicBrainz hinzufügen; Discogs kommt mit einem eigenen Token dazu. Vinyl-Pressungen stehen zuerst, Seiten und Mitwirkende werden gleich übernommen.',
+        en: 'Add records by scanning the barcode, by typing it or by searching MusicBrainz; Discogs joins with a token of your own. Vinyl pressings come first, and sides and credits come along.',
+      },
+      {
+        kind: 'new',
+        de: 'Jede Platte mit ihrer Pressung wie auf einem Museumsschild, den Seiten wie auf dem Etikett, dem Zustand von Platte und Hülle und ihrer Herkunft: wo gekauft, von wem geschenkt, von welcher Reise mitgebracht.',
+        en: 'Every record with its pressing set like a museum label, its sides like the label on the record, the condition of record and sleeve, and its provenance: bought where, a gift from whom, brought home from which trip.',
+      },
+      {
+        kind: 'new',
+        de: 'Auflegen und Hörprotokoll: Der Salon hat einen Plattenteller, „Was lege ich auf?“ schlägt eine Platte vor, die lange gewartet hat.',
+        en: 'Play and listening log: the salon has a turntable, and “What shall I play?” suggests a record that has waited a while.',
+      },
+      {
+        kind: 'improved',
+        de: 'Gestalter:innen und Musiker:innen werden zu Personen – Andy Warhols Seite zeigt seine Bilder und sein Cover. Listen mischen jetzt auch Platten, Plattenläden erscheinen als Orte im Atlas.',
+        en: 'Designers and musicians become people – Andy Warhol’s page shows his paintings and his sleeve. Lists now mix records too, and record shops appear as places in the atlas.',
+      },
+      {
+        kind: 'improved',
+        de: 'Die Bilanz zählt Platten, Hörstunden und zeigt ein Jahr Zuhören als Kalender, dazu Jahrzehnte, Genres, Labels und die Staubfänger.',
+        en: 'Insights count records and hours listened and show a year of listening as a calendar, with decades, genres, labels and the records gathering dust.',
+      },
+    ],
+  },
+  {
     version: '0.4.0',
     date: '2026-10-23',
     entries: [
